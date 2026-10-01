@@ -1,0 +1,82 @@
+/* The closing block: a full-bleed navy band that the footer continues. */
+.join {
+  position: relative;
+  background: var(--section-dark);
+  color: var(--on-dark);
+}
+
+.join :focus-visible {
+  outline-color: var(--focus-ring-on-dark);
+}
+
+.key {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  height: 4px;
+}
+
+.key span:nth-child(1) {
+  background: var(--logo-yellow);
+}
+
+.key span:nth-child(2) {
+  background: var(--logo-blue);
+}
+
+.key span:nth-child(3) {
+  background: var(--logo-green);
+}
+
+.key span:nth-child(4) {
+  background: var(--logo-red);
+}
+
+.inner {
+  display: grid;
+  gap: var(--space-7);
+  padding-block: var(--section-space) clamp(var(--space-9), 7vw, var(--space-11));
+}
+
+.title {
+  max-width: 13ch;
+  color: var(--on-dark);
+  font-size: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+
+.stop {
+  color: var(--accent-gold);
+}
+
+.aside {
+  display: grid;
+  align-content: end;
+  gap: var(--space-6);
+}
+
+.body {
+  max-width: 44ch;
+  color: var(--on-dark-secondary);
+  font-size: var(--text-lead);
+}
+
+.actions {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 30rem) {
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+
+@media (min-width: 64rem) {
+  .inner {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: var(--space-9);
+    align-items: end;
+  }
+}

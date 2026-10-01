@@ -1,0 +1,49 @@
+.section {
+  position: relative;
+}
+
+/* A centred head for a centred hierarchy. */
+.head {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+  margin-bottom: clamp(var(--space-8), 5vw, var(--space-10));
+}
+
+.term {
+  color: var(--brand-primary);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.lead {
+  max-width: 48ch;
+}
+
+.note {
+  margin-top: var(--space-2);
+}
+
+.cta {
+  display: flex;
+  margin-top: clamp(var(--space-9), 6vw, var(--space-10));
+}
+
+@media (min-width: 48rem) {
+  .head {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .head :global(.section-title) {
+    max-width: 20ch;
+  }
+
+  .note {
+    text-align: left;
+  }
+
+  .cta {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,141 @@
+/* Hallmark · macrostructure: Ecosystem Index (featured · schedule · portfolio · index) + sticky diptych hero
+ * theme: custom (tuned) · vibe: "contemporary engineering exhibition, precise and warm"
+ * paper: #F7F8F2 warm ivory · accent: #234BC4 cobalt (cool) · detail: #CBA326 crest gold
+ * logo keys: the society logo's four quadrant colours, used only in the sculpture and colour keys
+ * display: Space Grotesk 500–700 · body: Manrope 400–600 · axes: light / grotesk-sans / cool
+ * nav: N5 floating pill (detached, 16px from top) · footer: Ft1 mast-headed on the navy closing band
+ * enrichment: one WebGL sculpture derived from the logo (hero only) + subject-specific SVG drawings
+ */
+/* Hallmark · pre-emit critique: P5 H5 E4 S5 R4 V5 */
+
+/* Colour values are proposed interface colours inspired by the supplied assets,
+   not official brand specifications. Components reference these by name only. */
+:root {
+  --background: #f7f8f2;
+  --surface: #ffffff;
+  --surface-soft: #eef2f8;
+  --text-primary: #13233c;
+  --text-secondary: #526176;
+  --brand-primary: #234bc4;
+  --brand-hover: #193aa0;
+  --brand-soft: #e8eeff;
+  --accent-gold: #cba326;
+  --section-dark: #10213d;
+  --border: #dce2ea;
+
+  /* Derived roles */
+  --on-brand: #ffffff;
+  --on-dark: #f7f8f2;
+  --on-dark-secondary: #aebacd;
+  --border-strong: #c7d0dc;
+  --border-on-dark: rgb(247 248 242 / 0.14);
+  --border-on-dark-strong: rgb(247 248 242 / 0.36);
+  --surface-on-dark: rgb(247 248 242 / 0.06);
+  --grid-line: rgb(19 35 60 / 0.055);
+  --placeholder-ink: rgb(19 35 60 / 0.09);
+  /* Sampled from the society logo's four quadrants. Used only as small, deliberate keys:
+     the hero sculpture's reliefs, the colour-key bars and discipline symbol details. */
+  --logo-yellow: #eacc2a;
+  --logo-blue: #0066ae;
+  --logo-green: #7eba0c;
+  --logo-red: #ae1806;
+
+  --brand-soft-hover: #dce5ff;
+  --gold-halo: rgb(203 163 38 / 0.18);
+  --gold-halo-strong: rgb(203 163 38 / 0.45);
+  --focus-ring: #234bc4;
+  --focus-ring-on-dark: #f7f8f2;
+  --scrim: rgb(16 33 61 / 0.32);
+  --nav-surface: rgb(251 251 247 / 0.94);
+  --nav-surface-scrolled: rgb(251 251 247 / 0.985);
+
+  /* Elevation — navy-tinted, restrained */
+  --shadow-nav: 0 1px 2px rgb(19 35 60 / 0.04), 0 8px 24px -12px rgb(19 35 60 / 0.12);
+  --shadow-nav-scrolled: 0 1px 2px rgb(19 35 60 / 0.06), 0 14px 32px -14px rgb(19 35 60 / 0.22);
+  --shadow-card: 0 1px 2px rgb(19 35 60 / 0.04);
+  --shadow-card-hover: 0 2px 4px rgb(19 35 60 / 0.04), 0 18px 36px -20px rgb(19 35 60 / 0.28);
+  --shadow-dialog: 0 24px 64px -24px rgb(16 33 61 / 0.45);
+  --shadow-portrait: 0 18px 30px -18px rgb(19 35 60 / 0.35);
+
+  /* Typography — families are provided by next/font in app/layout.tsx */
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: var(--font-plex-arabic), 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+
+  --text-hero: clamp(2.75rem, 1.55rem + 4.6vw, 5.5rem); /* 44 → 88px */
+  --text-h2: clamp(2rem, 1.5rem + 2vw, 3.25rem); /* 32 → 52px */
+  --text-h3: clamp(1.375rem, 1.22rem + 0.55vw, 1.75rem); /* 22 → 28px */
+  --text-h4: 1.25rem;
+  --text-lead: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  --text-body: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem); /* 16 → 17px */
+  --text-nav: 0.9375rem; /* 15px */
+  --text-small: 0.875rem; /* 14px */
+  --text-label: 0.8125rem; /* 13px — never below 12px */
+
+  --leading-display: 1.04;
+  --leading-heading: 1.12;
+  --leading-body: 1.65;
+  --tracking-display: -0.035em;
+  --tracking-heading: -0.022em;
+  --measure: 62ch;
+
+  /* Space — 8px rhythm */
+  --space-1: 0.25rem; /* 4 */
+  --space-2: 0.5rem; /* 8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem; /* 16 */
+  --space-5: 1.5rem; /* 24 */
+  --space-6: 2rem; /* 32 */
+  --space-7: 2.5rem; /* 40 */
+  --space-8: 3rem; /* 48 */
+  --space-9: 4rem; /* 64 */
+  --space-10: 5rem; /* 80 */
+  --space-11: 6rem; /* 96 */
+  --space-12: 8rem; /* 128 */
+
+  --section-space: clamp(4.5rem, 1.6rem + 8.2vw, 8.5rem); /* ~72 mobile → 136 desktop */
+  --content-max: 80rem; /* 1280 */
+  --gutter: 1.25rem; /* 20 mobile */
+
+  /* Shape */
+  --radius-card: 18px;
+  --radius-plate: 14px;
+  --radius-button: 11px;
+  --radius-nav: 16px;
+  --radius-chip: 999px;
+
+  /* Chrome */
+  --nav-height: 64px;
+  --nav-offset: 12px;
+
+  /* Motion — one vocabulary shared with lib/motion.ts */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-power3-out: cubic-bezier(0.215, 0.61, 0.355, 1); /* GSAP power3.out */
+  --dur-press: 140ms;
+  --dur-hover: 180ms;
+  --dur-menu: 220ms;
+  --dur-dialog: 240ms;
+  --dur-intro: 700ms;
+  --stagger-intro: 90ms;
+}
+
+@media (max-width: 379.98px) {
+  :root {
+    --gutter: 1rem; /* 16 on narrow phones */
+  }
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --gutter: 2rem; /* 32 tablet */
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --gutter: clamp(3rem, 1rem + 3vw, 4rem); /* 48 → 64 desktop */
+    --nav-height: 72px;
+    --nav-offset: 16px;
+  }
+}

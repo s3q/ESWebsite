@@ -1,0 +1,331 @@
+.section {
+  position: relative;
+}
+
+.headAside {
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* ---------- Featured: a large drawing with the date as a graphic element ---------- */
+
+.featured {
+  display: grid;
+  gap: var(--space-9);
+}
+
+.visual {
+  position: relative;
+  padding-bottom: var(--space-7);
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-plate);
+  overflow: hidden;
+}
+
+.plate {
+  transition: transform 320ms var(--ease-out);
+}
+
+.sampleTag {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: var(--surface);
+}
+
+.date {
+  position: absolute;
+  left: var(--space-5);
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+/* The day straddles the drawing's lower edge; a halo in the page colour keeps it legible
+   over line work. */
+.day {
+  font-family: var(--font-display);
+  font-size: clamp(5.5rem, 3.6rem + 6vw, 9.5rem);
+  font-weight: 600;
+  line-height: 0.74;
+  letter-spacing: -0.055em;
+  color: var(--brand-primary);
+  font-variant-numeric: tabular-nums;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 10px var(--background);
+}
+
+.dateMeta {
+  display: grid;
+  gap: 2px;
+  padding-bottom: 4px;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.dateMeta span + span {
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.featuredText {
+  display: grid;
+  align-content: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.type {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--brand-primary);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.featuredTitle {
+  font-size: clamp(1.75rem, 1.35rem + 1.4vw, 2.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.description {
+  max-width: var(--measure);
+  color: var(--text-secondary);
+}
+
+.meta {
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+}
+
+.meta > div {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.meta dt {
+  display: flex;
+  padding-top: 2px;
+}
+
+.metaIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-secondary);
+}
+
+.meta dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.tz {
+  color: var(--text-secondary);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.register {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+}
+
+.featuredText .register {
+  margin-top: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-primary);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+/* ---------- Schedule: the other events as dated rows ---------- */
+
+.schedule {
+  margin-top: clamp(var(--space-9), 8vw, var(--space-12));
+}
+
+.scheduleTitle {
+  margin-bottom: var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.list {
+  border-bottom: 1px solid var(--border);
+}
+
+.item {
+  position: relative;
+}
+
+.rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border-strong);
+  transform-origin: left center;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 4.25rem minmax(0, 1fr);
+  gap: var(--space-4) var(--space-4);
+  padding-block: var(--space-6);
+}
+
+.rowDate {
+  display: grid;
+  align-content: start;
+  margin: 0;
+}
+
+.rowDay {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 2rem + 1.6vw, 3.5rem);
+  font-weight: 600;
+  line-height: 0.85;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-hover) var(--ease-out);
+}
+
+.rowMonth {
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.rowMain {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.rowTitle {
+  font-size: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+.rowMeta,
+.rowAction {
+  grid-column: 2;
+}
+
+.row:focus-within .rowDay {
+  color: var(--brand-primary);
+}
+
+.empty {
+  max-width: var(--measure);
+  padding: var(--space-8) var(--space-5);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-card);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* Hover and keyboard focus share the same restrained response. */
+.featured:focus-within .plate {
+  transform: scale(1.025);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .featured:hover .plate {
+    transform: scale(1.025);
+  }
+
+  .featured:hover :global(.btn__arrow),
+  .row:hover :global(.btn__arrow) {
+    transform: translateX(3px);
+  }
+
+  .row:hover .rowDay {
+    color: var(--brand-primary);
+  }
+}
+
+@media (min-width: 48rem) {
+  .row {
+    grid-template-columns: 6rem minmax(0, 1fr) minmax(0, 0.9fr);
+    column-gap: var(--space-6);
+  }
+
+  .rowMeta {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    padding-top: var(--space-6);
+  }
+
+  .rowAction {
+    grid-column: 2 / 4;
+  }
+}
+
+@media (min-width: 64rem) {
+  .featured {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: clamp(var(--space-8), 5vw, var(--space-10));
+    align-items: center;
+  }
+}
+
+/* The full schedule row — date, story, logistics, action — only where each column has room. */
+@media (min-width: 80rem) {
+  .row {
+    grid-template-columns: 7rem minmax(0, 1.25fr) minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .rowMeta {
+    padding-top: var(--space-6);
+  }
+
+  .rowAction {
+    grid-column: 4;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .rowAction .register {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate {
+    transition: none;
+  }
+}

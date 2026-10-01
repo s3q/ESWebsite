@@ -1,0 +1,360 @@
+/* A lighter "gallery wall" band gives Projects its own rhythm between Events and Disciplines. */
+.section {
+  background: var(--surface);
+  border-block: 1px solid var(--border);
+}
+
+.headAside {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.browser {
+  display: grid;
+  gap: var(--space-7);
+}
+
+/* ---------- Filters: text tabs with counts ---------- */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+.filter {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 44px;
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-secondary);
+  font-size: var(--text-nav);
+  font-weight: 600;
+  white-space: nowrap;
+  touch-action: manipulation;
+  transition: color var(--dur-hover) var(--ease-out);
+}
+
+.filter::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--text-primary);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-menu) var(--ease-out);
+}
+
+.filter:hover {
+  color: var(--text-primary);
+}
+
+.filter[aria-pressed='true'] {
+  color: var(--text-primary);
+}
+
+.filter[aria-pressed='true']::after {
+  transform: scaleX(1);
+}
+
+.count {
+  color: var(--text-secondary);
+  font-size: var(--text-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Results ---------- */
+
+.results {
+  display: grid;
+  gap: clamp(var(--space-9), 7vw, var(--space-11));
+  padding-top: var(--space-4);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .results {
+    animation: results-in 200ms var(--ease-out);
+  }
+}
+
+@keyframes results-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.tilt {
+  position: relative;
+  will-change: auto;
+}
+
+.media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-plate);
+}
+
+.plate {
+  transition: transform 320ms var(--ease-out);
+}
+
+.sampleTag {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  background: var(--surface);
+}
+
+/* ---------- Featured: an open split, no card box ---------- */
+
+.featured {
+  position: relative;
+  display: grid;
+  gap: var(--space-6);
+}
+
+.featured .media {
+  aspect-ratio: 16 / 10;
+}
+
+.featuredBody {
+  display: grid;
+  align-content: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.kicker {
+  color: var(--brand-primary);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.featuredTitle {
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+}
+
+.summary {
+  max-width: 54ch;
+  color: var(--text-secondary);
+}
+
+/* Specification strip: the archive metadata, set like a drawing's title block. */
+.spec {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, auto));
+  justify-content: start;
+  gap: var(--space-2) var(--space-7);
+  margin-top: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.spec dt {
+  color: var(--text-secondary);
+  font-size: var(--text-label);
+  font-weight: 500;
+}
+
+.spec dd {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.archiveStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-small);
+  font-weight: 500;
+}
+
+.archiveIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------- Supporting works: staggered, like pieces hung at different heights ---------- */
+
+.supporting {
+  display: grid;
+  gap: clamp(var(--space-8), 6vw, var(--space-10));
+}
+
+.card {
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+}
+
+.card .media {
+  aspect-ratio: 4 / 3;
+}
+
+.cardBody {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 34rem;
+}
+
+.cardMeta {
+  color: var(--brand-primary);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.cardTitle {
+  font-size: var(--text-h3);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+.team {
+  color: var(--text-primary);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+/* A real archive link makes the whole piece clickable, without depending on hover. */
+.stretched {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stretched::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-plate);
+}
+
+.titleArrow {
+  width: 20px;
+  height: 20px;
+  transition: transform var(--dur-hover) var(--ease-out);
+}
+
+.stretched:focus-visible {
+  outline: none;
+}
+
+.stretched:focus-visible::after {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 6px;
+}
+
+/* ---------- The rest of the archive ---------- */
+
+.more {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.moreTitle {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.moreList {
+  border-top: 1px solid var(--border-strong);
+}
+
+.moreRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-5);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.moreName {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.moreMeta {
+  color: var(--text-secondary);
+  font-size: var(--text-small);
+}
+
+.note {
+  color: var(--text-secondary);
+  font-size: var(--text-small);
+}
+
+/* Hover and keyboard focus share the same restrained response. */
+.featured:focus-within .plate,
+.card:focus-within .plate {
+  transform: scale(1.025);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .featured:hover .plate,
+  .card:hover .plate {
+    transform: scale(1.025);
+  }
+
+  .featured:hover .titleArrow,
+  .card:hover .titleArrow {
+    transform: translateX(3px);
+  }
+}
+
+@media (max-width: 29.99rem) {
+  .spec {
+    grid-template-columns: repeat(2, minmax(0, auto));
+  }
+}
+
+@media (min-width: 48rem) {
+  .supporting {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(var(--space-7), 5vw, var(--space-10));
+  }
+
+  /* The second piece hangs lower: a gallery rhythm rather than a grid of equal cards. */
+  .supporting > li:nth-child(2) {
+    padding-top: var(--space-11);
+  }
+}
+
+@media (min-width: 64rem) {
+  .featured {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    column-gap: clamp(var(--space-8), 5vw, var(--space-11));
+    align-items: center;
+  }
+
+  .featured .media {
+    aspect-ratio: 5 / 4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate,
+  .titleArrow {
+    transition: none;
+  }
+}

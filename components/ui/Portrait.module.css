@@ -1,0 +1,111 @@
+/* The leaf frame: rounded everywhere except the bottom-left corner. */
+.portrait {
+  --size: 140px;
+  --leaf: 50% 50% 50% 0;
+  position: relative;
+  display: block;
+  flex: none;
+  width: var(--size);
+  height: var(--size);
+  transition: transform 320ms var(--ease-out);
+}
+
+.portrait[data-size='lg'] {
+  --size: 176px;
+}
+
+.portrait[data-size='sm'] {
+  --size: 96px;
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--leaf);
+  background-color: var(--surface-soft);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 16px 16px;
+  box-shadow: 0 0 0 1px var(--border-strong);
+  transition: box-shadow 320ms var(--ease-out);
+}
+
+/* A fine outline accent, offset from the frame, that sharpens on hover. */
+.portrait::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: var(--leaf);
+  border: 1px solid var(--border);
+  transition: border-color 320ms var(--ease-out);
+  pointer-events: none;
+}
+
+.photo {
+  object-fit: cover;
+  transition: transform 420ms var(--ease-out);
+}
+
+.vacant {
+  position: absolute;
+  inset: 16% 18% 0;
+  width: 64%;
+  height: 84%;
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-opacity: 0.45;
+  stroke-width: 2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* The gold detail sits at the leaf's sharp corner, like the spark in the drawings. */
+.spark {
+  position: absolute;
+  left: -3px;
+  bottom: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-gold);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 320ms var(--ease-out),
+    transform 320ms var(--ease-out);
+}
+
+/* Parents opt in with data-portrait-host: gentle elevation, accent and spark on hover. */
+@media (hover: hover) and (pointer: fine) {
+  :global([data-portrait-host]:hover) .portrait {
+    transform: translateY(-3px);
+  }
+
+  :global([data-portrait-host]:hover) .frame {
+    box-shadow:
+      0 0 0 1px var(--border-strong),
+      var(--shadow-portrait);
+  }
+
+  :global([data-portrait-host]:hover) .portrait::after {
+    border-color: var(--brand-primary);
+  }
+
+  :global([data-portrait-host]:hover) .photo {
+    transform: scale(1.03);
+  }
+
+  :global([data-portrait-host]:hover) .spark {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portrait,
+  .photo {
+    transition: none;
+  }
+}

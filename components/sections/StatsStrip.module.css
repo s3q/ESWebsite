@@ -1,0 +1,141 @@
+/* A factual bridge between hero and overview: large figures, fine separators, no boxes. */
+.strip {
+  padding-block: clamp(var(--space-8), 5vw, var(--space-10)) var(--space-6);
+}
+
+.rule {
+  display: block;
+  height: 1px;
+  background: var(--border-strong);
+  transform-origin: left center;
+}
+
+.grid {
+  --figure-size: clamp(2.75rem, 1.9rem + 3.2vw, 4.5rem);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.item {
+  position: relative;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4) var(--space-5);
+}
+
+/* Fine vertical separators between columns (not before the first in each row). */
+.sep {
+  position: absolute;
+  top: var(--space-6);
+  bottom: var(--space-5);
+  left: 0;
+  width: 1px;
+  background: var(--border);
+  transform-origin: top center;
+}
+
+.item:nth-child(odd) .sep {
+  display: none;
+}
+
+.item:nth-child(n + 3) {
+  border-top: 1px solid var(--border);
+}
+
+.item:nth-child(odd) {
+  padding-left: 0;
+}
+
+/* Every figure occupies the same line box, so labels share one baseline even when the
+   year range is set smaller than the counts. */
+.figure {
+  display: flex;
+  align-items: flex-end;
+  min-height: calc(var(--figure-size) * 0.95);
+  margin: 0;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: var(--figure-size);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+/* A year range is wider than a count: it scales to its own column so it never wraps. */
+.figure[data-kind='year-range'] {
+  font-size: min(var(--figure-size), 21cqi);
+}
+
+.label {
+  max-width: 22ch;
+  color: var(--text-secondary);
+  font-size: var(--text-small);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.marker {
+  margin-left: 2px;
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 0;
+}
+
+.period {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--text-primary);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.notes {
+  display: grid;
+  gap: var(--space-1);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.note {
+  display: flex;
+  gap: var(--space-2);
+  max-width: 78ch;
+  color: var(--text-secondary);
+  font-size: var(--text-label);
+  line-height: 1.5;
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: minmax(0, 1.35fr) repeat(3, minmax(0, 1fr));
+  }
+
+  .item {
+    padding: var(--space-7) var(--space-6) var(--space-6);
+  }
+
+  .item:nth-child(odd) .sep {
+    display: block;
+  }
+
+  .item:first-child .sep {
+    display: none;
+  }
+
+  .item:nth-child(n + 3) {
+    border-top: 0;
+  }
+
+  .item:first-child {
+    padding-left: 0;
+  }
+
+  .item:nth-child(odd):not(:first-child) {
+    padding-left: var(--space-6);
+  }
+}
