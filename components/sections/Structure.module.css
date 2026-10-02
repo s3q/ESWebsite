@@ -58,14 +58,16 @@
 
 .committee {
   position: relative;
-  padding: 0 0 var(--row-gap) var(--space-7);
+  padding: 0;
+  padding-block-end: var(--row-gap);
+  padding-inline-start: var(--space-7);
 }
 
 .spine {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 0;
+  inset-inline-start: 0;
   width: 1px;
   background: var(--connector);
   transform-origin: top center;
@@ -79,7 +81,7 @@
 .tick {
   position: absolute;
   top: var(--tick-y);
-  left: 0;
+  inset-inline-start: 0;
   width: calc(var(--space-7) - var(--space-3));
   height: 1px;
   background: var(--connector);
@@ -132,19 +134,19 @@
 .team {
   position: relative;
   display: grid;
-  padding-left: var(--space-6);
+  padding-inline-start: var(--space-6);
 }
 
 .team::before {
   content: '';
   position: absolute;
-  left: var(--space-2);
+  inset-inline-start: var(--space-2);
   top: -6px;
   width: calc(var(--space-6) - var(--space-3));
   height: calc(0.9em + 6px);
-  border-left: 1px solid var(--border);
+  border-inline-start: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  border-bottom-left-radius: 4px;
+  border-end-start-radius: 4px;
 }
 
 .teamAr {
@@ -188,7 +190,7 @@
     display: block;
     justify-self: stretch;
     height: 1px;
-    margin-right: calc((100% - 3 * var(--col-gap)) / 4);
+    margin-inline-end: calc((100% - 3 * var(--col-gap)) / 4);
     transform-origin: center center;
   }
 
@@ -217,4 +219,14 @@
     bottom: auto;
     height: var(--tick-y);
   }
+}
+
+/* The Arabic site: names flush with the start edge; ticks grow from the spine outward. */
+:global(html[dir='rtl']) .name,
+:global(html[dir='rtl']) .teamAr {
+  text-align: right;
+}
+
+:global(html[dir='rtl']) .tick {
+  transform-origin: right center;
 }

@@ -235,3 +235,12 @@
     transition: none;
   }
 }
+
+/* On the Arabic site the names align with the page's start edge, and the accent grows from it. */
+:global(html[dir='rtl']) .title {
+  text-align: right;
+}
+
+:global(html[dir='rtl']) .accent {
+  transform-origin: right center;
+}

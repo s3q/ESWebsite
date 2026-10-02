@@ -20,9 +20,10 @@
   height: var(--nav-height);
   margin-inline: auto;
   padding-inline: var(--space-3) var(--space-2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--nav-border);
   border-radius: var(--radius-nav);
-  background: var(--surface);
+  /* Fallback first: an opaque bar wherever backdrop blur is unsupported. */
+  background: var(--nav-surface-solid);
   box-shadow: var(--shadow-nav);
   transition:
     background-color 240ms var(--ease-out),
@@ -30,11 +31,14 @@
     border-color 240ms var(--ease-out);
 }
 
-@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
-  .bar {
+/* Frosted glass: a pale, cool tint over a soft blur, so the page reads through the bar
+   without competing with its labels. A hairline highlight on top, a fine rule beneath. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bar,
+  .panel {
     background: var(--nav-surface);
-    -webkit-backdrop-filter: saturate(1.2) blur(12px);
-    backdrop-filter: saturate(1.2) blur(12px);
+    -webkit-backdrop-filter: saturate(1.6) blur(18px);
+    backdrop-filter: saturate(1.6) blur(18px);
   }
 
   .header[data-scrolled] .bar {
@@ -42,8 +46,19 @@
   }
 }
 
+.bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 1px 0 var(--nav-highlight),
+    inset 0 -1px 0 var(--nav-underline);
+  pointer-events: none;
+}
+
 .header[data-scrolled] .bar {
-  border-color: var(--border-strong);
+  border-color: var(--nav-border-scrolled);
   box-shadow: var(--shadow-nav-scrolled);
 }
 
@@ -54,7 +69,8 @@
   align-items: center;
   gap: var(--space-3);
   min-height: 44px;
-  padding-right: var(--space-2);
+  min-width: 0;
+  padding-inline-end: var(--space-2);
   border-radius: 10px;
 }
 
@@ -66,6 +82,7 @@
 
 .brandText {
   display: grid;
+  min-width: 0;
   line-height: 1.15;
 }
 
@@ -152,6 +169,15 @@
   display: none;
 }
 
+/* The full English | العربية control needs a wide bar; smaller screens get one toggle. */
+.language {
+  display: none;
+}
+
+.languageCompact {
+  flex: none;
+}
+
 .menuButton {
   display: inline-grid;
   place-items: center;
@@ -208,9 +234,9 @@
   max-width: 75rem;
   margin: var(--space-2) auto 0;
   padding: var(--space-2) var(--space-4) var(--space-4);
-  border: 1px solid var(--border);
+  border: 1px solid var(--nav-border);
   border-radius: var(--radius-nav);
-  background: var(--surface);
+  background: var(--nav-surface-solid);
   box-shadow: var(--shadow-nav-scrolled);
   visibility: hidden;
   opacity: 0;
@@ -299,6 +325,10 @@
     display: inline-flex;
   }
 
+  .actions {
+    gap: var(--space-3);
+  }
+
   .menuButton,
   .panel,
   .scrim {
@@ -311,4 +341,23 @@
   .menuIcon span {
     transition-duration: 0s;
   }
+}
+
+@media (min-width: 80rem) {
+  .language {
+    display: inline-flex;
+  }
+
+  .languageCompact {
+    display: none;
+  }
+}
+
+/* Arabic: the brand and panel links take the Arabic face's taller line. */
+:global(html[lang='ar']) .brandName {
+  font-size: 1rem;
+}
+
+:global(html[lang='ar']) .brandSub {
+  font-size: 0.8125rem;
 }

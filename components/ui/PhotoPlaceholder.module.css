@@ -38,7 +38,7 @@
 
 .tag {
   position: absolute;
-  left: var(--space-4);
+  inset-inline-start: var(--space-4);
   bottom: var(--space-4);
   display: inline-flex;
   align-items: center;

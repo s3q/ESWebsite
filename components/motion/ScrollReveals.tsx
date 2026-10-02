@@ -3,6 +3,7 @@
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import { MOTION } from '@/lib/motion'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -16,14 +17,19 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
  *   points   fine rules draw across, then their short texts rise
  *   chart    the About page's committees: trunk, bus, spines and ticks draw; names fade in
  *   feature  Events' lead item: the drawing unmasks, the date lifts in, the text follows
- *   rows     the schedule: each rule draws across, then its row slides in from the left
+ *   rows     the schedule: each rule draws across, then its row slides in from the start edge
  *   index    disciplines: rules draw while each symbol settles into scale
- *   key      the closing colour key draws from left to right
+ *   key      the closing colour key draws from the start edge
  * Everything plays once. Content is visible without JavaScript and under reduced motion:
  * initial states are applied here, and only to elements that start below the fold.
  * (Projects run their own mask/parallax/tilt in ProjectsBrowser, on separate elements.)
  */
 export function ScrollReveals() {
+  // Directional recipes (rows slide in from the start edge, the key draws from it) follow the
+  // page direction, and are rebuilt if the visitor switches language.
+  const { dir } = useI18n()
+  const start = dir === 'rtl' ? 1 : -1
+
   useGSAP(() => {
     const mm = gsap.matchMedia()
 
@@ -107,7 +113,7 @@ export function ScrollReveals() {
             const at = i * (recipe === 'rows' ? 0.12 : 0.06)
             tl.from(parts(item, 'rule'), { scaleX: 0, duration: MOTION.rule.duration, clearProps: 'transform' }, at)
             if (recipe === 'rows') {
-              tl.from(parts(item, 'row'), { opacity: 0, x: -16, duration: 0.6, clearProps: 'opacity,transform' }, at + 0.12)
+              tl.from(parts(item, 'row'), { opacity: 0, x: 16 * start, duration: 0.6, clearProps: 'opacity,transform' }, at + 0.12)
             } else {
               const symbol = item.querySelector('svg')
               if (symbol) tl.from(symbol, { opacity: 0, scale: 0.86, duration: 0.5, transformOrigin: '50% 50%', clearProps: 'opacity,transform' }, at + 0.08)
@@ -120,7 +126,7 @@ export function ScrollReveals() {
         if (recipe === 'key') {
           gsap.from(el.children, {
             scaleX: 0,
-            transformOrigin: 'left center',
+            transformOrigin: dir === 'rtl' ? 'right center' : 'left center',
             duration: 0.7,
             ease: MOTION.easeInOut,
             stagger: 0.09,
@@ -140,7 +146,7 @@ export function ScrollReveals() {
       window.removeEventListener('load', refresh)
       mm.revert()
     }
-  })
+  }, { dependencies: [dir], revertOnUpdate: true })
 
   return null
 }

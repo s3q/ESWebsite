@@ -10,6 +10,7 @@ import { Leadership } from '@/components/sections/Leadership'
 import { Overview } from '@/components/sections/Overview'
 import { Projects } from '@/components/sections/Projects'
 import { StatsStrip } from '@/components/sections/StatsStrip'
+import { SOCIETY_STATS } from '@/content/stats'
 
 export default function HomePage() {
   return (
@@ -17,7 +18,7 @@ export default function HomePage() {
       <SiteHeader />
       <main id="main" tabIndex={-1}>
         <Hero />
-        <StatsStrip />
+        <StatsStrip stats={SOCIETY_STATS} />
         <Overview />
         <Events />
         <Projects />

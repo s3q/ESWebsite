@@ -1,10 +1,12 @@
 import { DISCIPLINES } from '@/content/disciplines'
 import { PROJECTS } from '@/content/projects'
 import { DisciplineSymbol } from '@/components/ui/DisciplineSymbol'
+import { getI18n } from '@/lib/i18n/server'
 import { DisciplineProjectsLink } from './DisciplineProjectsLink'
 import styles from './Disciplines.module.css'
 
-export function Disciplines() {
+export async function Disciplines() {
+  const { t, l } = await getI18n()
   // An action appears only where it leads somewhere real: a discipline with archive entries.
   const withProjects = new Set(PROJECTS.map((p) => p.discipline))
 
@@ -13,12 +15,8 @@ export function Disciplines() {
       <div className="container">
         <header className="section-head">
           <h2 id="disciplines-title" className="section-title" data-reveal="heading">
-            Different disciplines. Shared ambition.
+            {t.disciplines.title}
           </h2>
-          <p className="section-lead" data-reveal="rise" style={{display:"none"}}>
-            Seven engineering disciplines meet in one society: the same events, the same archive and the same
-            network, whichever field you study.
-          </p>
         </header>
 
         <ul className={styles.index} data-reveal="index">
@@ -27,12 +25,12 @@ export function Disciplines() {
               <span className={styles.rule} data-part="rule" aria-hidden="true" />
               <DisciplineSymbol id={d.id} className={styles.symbol} />
               <div className={styles.text} data-part="text">
-                <h3 className={styles.name}>{d.name}</h3>
-                <p className={styles.focus}>{d.focus}</p>
-                <p className={styles.description}>{d.description}</p>
+                <h3 className={styles.name}>{l(d.name)}</h3>
+                <p className={styles.focus}>{l(d.focus)}</p>
+                <p className={styles.description}>{l(d.description)}</p>
               </div>
               {withProjects.has(d.id) && (
-                <DisciplineProjectsLink discipline={d.id} name={d.shortName} className={styles.action} />
+                <DisciplineProjectsLink discipline={d.id} name={l(d.shortName)} className={styles.action} />
               )}
             </li>
           ))}

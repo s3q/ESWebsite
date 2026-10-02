@@ -1,3 +1,4 @@
+import type { Localized } from '@/lib/i18n'
 import type { MediaImage } from './media'
 
 /**
@@ -14,10 +15,11 @@ import type { MediaImage } from './media'
  *   until the society confirms whether a second team was intended and where it belongs.
  * - Committee chairs and deputies are added to `roles` only when the actual roster specifies
  *   them. No committee is assumed to have a particular number of deputies.
+ * - Arabic names (`name.ar`) are the society's own; English names are working labels.
  */
 
 export interface Person {
-  name: string
+  name: Localized
   portrait: MediaImage | null
   /** CSS object-position for consistent head-and-shoulders crops, e.g. '50% 28%'. */
   portraitFocus?: string
@@ -25,88 +27,82 @@ export interface Person {
 
 export interface Position {
   id: string
-  titleEn: string
-  titleAr: string
+  title: Localized
   holder: Person | null
   /** Optional subtitle, shown only when supplied. */
-  responsibility?: string | null
+  responsibility?: Localized | null
 }
 
 export interface Team {
   id: string
-  nameAr: string
-  nameEn: string
+  name: Localized
 }
 
 export interface CommitteeRole {
-  titleEn: string
-  titleAr?: string
+  title: Localized
   holder: Person | null
 }
 
 export interface Committee {
   id: string
-  nameAr: string
-  /** Working English label, not an official title. */
-  nameEn: string
+  name: Localized
   roles: CommitteeRole[]
   teams: Team[]
 }
 
-export const SENIOR_LEADERSHIP = { nameAr: 'الإدارة العليا', nameEn: 'Senior leadership' } as const
+export const SENIOR_LEADERSHIP: Localized = { en: 'Senior leadership', ar: 'الإدارة العليا' }
+
+const PRESIDENT: Localized = { en: 'President', ar: 'الرئيس' }
+const VICE_PRESIDENT: Localized = { en: 'Vice President', ar: 'نائب الرئيس' }
 
 export const LEADERSHIP: {
-  /** e.g. '2026–27 academic year'. Hidden while null. */
-  term: string | null
+  /** e.g. { en: '2026–27 academic year', ar: 'العام الأكاديمي 2026–2027' }. Hidden while null. */
+  term: Localized | null
   president: Position
   vicePresidents: Position[]
 } = {
   term: null,
-  president: { id: 'president', titleEn: 'President', titleAr: 'الرئيس', holder: null },
+  president: { id: 'president', title: PRESIDENT, holder: null },
   vicePresidents: [
-    { id: 'vice-president-1', titleEn: 'Vice President', titleAr: 'نائب الرئيس', holder: null },
-    { id: 'vice-president-2', titleEn: 'Vice President', titleAr: 'نائب الرئيس', holder: null },
-    { id: 'vice-president-3', titleEn: 'Vice President', titleAr: 'نائب الرئيس', holder: null },
+    { id: 'vice-president-1', title: VICE_PRESIDENT, holder: null },
+    { id: 'vice-president-2', title: VICE_PRESIDENT, holder: null },
+    { id: 'vice-president-3', title: VICE_PRESIDENT, holder: null },
   ],
 }
 
 export const COMMITTEES: Committee[] = [
-  { id: 'finance', nameAr: 'اللجنة المالية', nameEn: 'Finance Committee', roles: [], teams: [] },
+  { id: 'finance', name: { ar: 'اللجنة المالية', en: 'Finance Committee' }, roles: [], teams: [] },
   {
     id: 'media',
-    nameAr: 'اللجنة الإعلامية',
-    nameEn: 'Media Committee',
+    name: { ar: 'اللجنة الإعلامية', en: 'Media Committee' },
     roles: [],
     teams: [
-      { id: 'photography', nameAr: 'فريق التصوير', nameEn: 'Photography Team' },
-      { id: 'marketing', nameAr: 'فريق التسويق', nameEn: 'Marketing Team' },
+      { id: 'photography', name: { ar: 'فريق التصوير', en: 'Photography Team' } },
+      { id: 'marketing', name: { ar: 'فريق التسويق', en: 'Marketing Team' } },
     ],
   },
   {
     id: 'support',
-    nameAr: 'لجنة الدعم والإسناد',
-    nameEn: 'Support Committee',
+    name: { ar: 'لجنة الدعم والإسناد', en: 'Support Committee' },
     roles: [],
-    teams: [{ id: 'technical', nameAr: 'الفريق التقني', nameEn: 'Technical Team' }],
+    teams: [{ id: 'technical', name: { ar: 'الفريق التقني', en: 'Technical Team' } }],
   },
   {
     id: 'relations',
-    nameAr: 'لجنة العلاقات',
-    nameEn: 'Relations Committee',
+    name: { ar: 'لجنة العلاقات', en: 'Relations Committee' },
     roles: [],
     teams: [
-      { id: 'external-relations', nameAr: 'فريق العلاقات الخارجية', nameEn: 'External Relations Team' },
-      { id: 'public-relations', nameAr: 'فريق العلاقات العامة', nameEn: 'Public Relations Team' },
+      { id: 'external-relations', name: { ar: 'فريق العلاقات الخارجية', en: 'External Relations Team' } },
+      { id: 'public-relations', name: { ar: 'فريق العلاقات العامة', en: 'Public Relations Team' } },
     ],
   },
   {
     id: 'members-graduates',
-    nameAr: 'لجنة شؤون الأعضاء والخريجين',
-    nameEn: 'Members & Graduates Committee',
+    name: { ar: 'لجنة شؤون الأعضاء والخريجين', en: 'Members & Graduates Committee' },
     roles: [],
     teams: [],
   },
-  { id: 'activities', nameAr: 'لجنة الأنشطة', nameEn: 'Activities Committee', roles: [], teams: [] },
-  { id: 'projects', nameAr: 'لجنة المشاريع', nameEn: 'Projects Committee', roles: [], teams: [] },
-  { id: 'exhibition', nameAr: 'لجنة المعرض', nameEn: 'Exhibition Committee', roles: [], teams: [] },
+  { id: 'activities', name: { ar: 'لجنة الأنشطة', en: 'Activities Committee' }, roles: [], teams: [] },
+  { id: 'projects', name: { ar: 'لجنة المشاريع', en: 'Projects Committee' }, roles: [], teams: [] },
+  { id: 'exhibition', name: { ar: 'لجنة المعرض', en: 'Exhibition Committee' }, roles: [], teams: [] },
 ]

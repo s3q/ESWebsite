@@ -1,14 +1,15 @@
 'use client'
 
 import { useId, useRef, type ReactNode } from 'react'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import { IconArrowRight, IconClose } from './icons'
 import styles from './PreviewAction.module.css'
 
 interface PreviewActionProps {
   /** Visible trigger label. */
   label: string
-  /** Extra context for screen readers, e.g. the event title. */
-  labelSuffix?: string
+  /** A fuller name for screen readers that starts with the visible label, e.g. with the event title. */
+  accessibleLabel?: string
   variant?: 'primary' | 'secondary' | 'quiet' | 'on-dark'
   compact?: boolean
   /** Adds a trailing arrow that moves on hover and keyboard focus. */
@@ -26,7 +27,7 @@ interface PreviewActionProps {
  */
 export function PreviewAction({
   label,
-  labelSuffix,
+  accessibleLabel,
   variant = 'primary',
   compact,
   arrow,
@@ -35,6 +36,7 @@ export function PreviewAction({
   children,
   next,
 }: PreviewActionProps) {
+  const { t } = useI18n()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const titleId = useId()
   const bodyId = useId()
@@ -49,7 +51,7 @@ export function PreviewAction({
         className={['btn', `btn--${variant}`, compact && 'btn--compact', className].filter(Boolean).join(' ')}
         aria-haspopup="dialog"
         // Starts with the visible label, so voice control users can still say what they see.
-        aria-label={labelSuffix ? `${label} for ${labelSuffix}` : undefined}
+        aria-label={accessibleLabel}
         onClick={open}
       >
         {label}
@@ -70,11 +72,11 @@ export function PreviewAction({
           <div className={styles.header}>
             <span className="chip chip--sample">
               <span className="status-dot" aria-hidden="true" />
-              Preview
+              {t.common.preview}
             </span>
             <button type="button" className={styles.close} onClick={close}>
               <IconClose width={20} height={20} />
-              <span className="visually-hidden">Close</span>
+              <span className="visually-hidden">{t.common.close}</span>
             </button>
           </div>
           <h2 id={titleId} className={styles.title}>
@@ -91,7 +93,7 @@ export function PreviewAction({
               </a>
             )}
             <button type="button" className="btn btn--secondary btn--compact" onClick={close} autoFocus>
-              Close
+              {t.common.close}
             </button>
           </div>
         </div>

@@ -107,7 +107,7 @@
 
   /* The sculpture takes the room to the viewport edge; the copy never overlaps it. */
   .artColumn {
-    margin-right: calc(var(--gutter) * -1);
+    margin-inline-end: calc(var(--gutter) * -1);
   }
 }
 

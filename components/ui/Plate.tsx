@@ -1,9 +1,15 @@
 import Image from 'next/image'
-import type { MediaImage } from '@/content/media'
 import { DRAWINGS, type DrawingId } from './drawings'
 import styles from './Plate.module.css'
 
 export type { DrawingId }
+
+/** A photograph with its alt text already in the page's language. */
+export interface ResolvedImage {
+  src: string
+  alt: string
+  focus?: string
+}
 
 type PlateTone = 'soft' | 'brand' | 'ivory'
 
@@ -48,11 +54,19 @@ export function ItemMedia({
   tone,
   sizes,
   className,
-}: PlateProps & { image?: MediaImage; sizes: string }) {
+}: PlateProps & { image?: ResolvedImage; sizes: string }) {
   if (image) {
     return (
       <div className={[styles.plate, styles.photo, className].filter(Boolean).join(' ')}>
-        <Image src={image.src} alt={image.alt} fill sizes={sizes} className={styles.photoImg} data-parallax="" />
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          sizes={sizes}
+          className={styles.photoImg}
+          style={image.focus ? { objectPosition: image.focus } : undefined}
+          data-parallax=""
+        />
       </div>
     )
   }

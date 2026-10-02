@@ -11,7 +11,18 @@ const PIXELS: Record<Size, number> = { lg: 176, md: 140, sm: 96 }
  * the hero modules and discipline tiles. Photos share one crop (head and shoulders, focus
  * adjustable per person). A vacant seat shows a quiet line drawing, never a stock face.
  */
-export function Portrait({ person, size = 'md', className }: { person: Person | null; size?: Size; className?: string }) {
+export function Portrait({
+  person,
+  alt = '',
+  size = 'md',
+  className,
+}: {
+  person: Person | null
+  /** The portrait's description, in the page's language. */
+  alt?: string
+  size?: Size
+  className?: string
+}) {
   const px = PIXELS[size]
   return (
     <span className={[styles.portrait, className].filter(Boolean).join(' ')} data-size={size} data-vacant={!person?.portrait || undefined}>
@@ -19,7 +30,7 @@ export function Portrait({ person, size = 'md', className }: { person: Person | 
         {person?.portrait ? (
           <Image
             src={person.portrait.src}
-            alt={person.portrait.alt}
+            alt={alt}
             fill
             sizes={`${px}px`}
             className={styles.photo}

@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { forwardRef, useCallback, useEffect, useRef, useState, type AnchorHTMLAttributes } from 'react'
 import { PAGE_LINKS, SECTION_LINKS, SITE, sectionHref, type SectionId } from '@/content/site'
+import { useI18n } from '@/components/i18n/I18nProvider'
+import { LanguageSwitch } from '@/components/i18n/LanguageSwitch'
 import { DESKTOP_QUERY } from '@/lib/motion'
 import styles from './SiteHeader.module.css'
 
@@ -19,6 +21,7 @@ const NavLink = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorEle
 )
 
 export function SiteHeader() {
+  const { t } = useI18n()
   const pathname = usePathname()
   const onHome = pathname === '/'
   const joinHref = SITE.membershipUrl ?? sectionHref('join', onHome)
@@ -123,13 +126,13 @@ export function SiteHeader() {
               className={styles.emblem}
             />
             <span className={styles.brandText}>
-              <span className={styles.brandName}>{SITE.name}</span>
-              <span className={styles.brandSub}>{SITE.affiliation}</span>
+              <span className={styles.brandName}>{t.site.name}</span>
+              <span className={styles.brandSub}>{t.site.affiliation}</span>
             </span>
-            <span className="visually-hidden">{onHome ? ', back to top' : ', home'}</span>
+            <span className="visually-hidden">{onHome ? t.nav.backToTop : t.nav.home}</span>
           </NavLink>
 
-          <nav aria-label="Sections" className={styles.nav}>
+          <nav aria-label={t.nav.sectionsLabel} className={styles.nav}>
             <ul className={styles.links}>
               {SECTION_LINKS.map((link) => (
                 <li key={link.id}>
@@ -138,7 +141,7 @@ export function SiteHeader() {
                     className={styles.link}
                     aria-current={onHome && active === link.id ? 'location' : undefined}
                   >
-                    {link.label}
+                    {t.nav.links[link.id]}
                   </NavLink>
                 </li>
               ))}
@@ -149,7 +152,7 @@ export function SiteHeader() {
                     className={styles.link}
                     aria-current={pathname.startsWith(link.href) ? 'page' : undefined}
                   >
-                    {link.label}
+                    {t.nav.links[link.id]}
                   </NavLink>
                 </li>
               ))}
@@ -157,8 +160,10 @@ export function SiteHeader() {
           </nav>
 
           <div className={styles.actions}>
+            <LanguageSwitch className={styles.language} />
+            <LanguageSwitch compact className={styles.languageCompact} />
             <NavLink href={joinHref} className={`btn btn--primary btn--compact ${styles.join}`}>
-              Join the Society
+              {t.nav.join}
             </NavLink>
             <button
               ref={menuButtonRef}
@@ -168,7 +173,7 @@ export function SiteHeader() {
               aria-controls="site-menu"
               onClick={() => setOpen((v) => !v)}
             >
-              <span className="visually-hidden">{open ? 'Close menu' : 'Open menu'}</span>
+              <span className="visually-hidden">{open ? t.nav.closeMenu : t.nav.openMenu}</span>
               <span className={styles.menuIcon} aria-hidden="true">
                 <span />
                 <span />
@@ -178,7 +183,7 @@ export function SiteHeader() {
         </div>
 
         <div id="site-menu" className={styles.panel}>
-          <nav aria-label="Sections">
+          <nav aria-label={t.nav.sectionsLabel}>
             <ul className={styles.panelLinks}>
               {SECTION_LINKS.map((link, i) => (
                 <li key={link.id}>
@@ -189,7 +194,7 @@ export function SiteHeader() {
                     aria-current={onHome && active === link.id ? 'location' : undefined}
                     onClick={() => close(false)}
                   >
-                    {link.label}
+                    {t.nav.links[link.id]}
                   </NavLink>
                 </li>
               ))}
@@ -201,14 +206,14 @@ export function SiteHeader() {
                     aria-current={pathname.startsWith(link.href) ? 'page' : undefined}
                     onClick={() => close(false)}
                   >
-                    {link.label}
+                    {t.nav.links[link.id]}
                   </NavLink>
                 </li>
               ))}
             </ul>
           </nav>
           <NavLink href={joinHref} className={`btn btn--primary ${styles.panelJoin}`} onClick={() => close(false)}>
-            Join the Society
+            {t.nav.join}
           </NavLink>
         </div>
       </header>

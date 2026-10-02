@@ -112,7 +112,7 @@
 .sampleTag {
   position: absolute;
   top: var(--space-4);
-  left: var(--space-4);
+  inset-inline-start: var(--space-4);
   background: var(--surface);
 }
 
@@ -357,4 +357,8 @@
   .titleArrow {
     transition: none;
   }
+}
+
+:global(html[dir='rtl']) .filter::after {
+  transform-origin: right center;
 }

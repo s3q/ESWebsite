@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Sans_Arabic, Manrope, Space_Grotesk } from 'next/font/google'
-import { SITE } from '@/content/site'
+import { I18nProvider } from '@/components/i18n/I18nProvider'
+import { getI18n } from '@/lib/i18n/server'
 import '@/styles/globals.css'
 
 // Only the weights the design uses. (Turbopack's loader rejects range strings like '500 700'.)
@@ -18,22 +19,27 @@ const manrope = Manrope({
   display: 'swap',
 })
 
-// Arabic names (activities, the society structure) keep their own typeface and direction.
+// The Arabic face: IBM Plex Sans Arabic shares Space Grotesk's engineered, open geometry and
+// Manrope's calm texture. It sets the whole Arabic site and the Arabic names on the English one.
 const plexArabic = IBM_Plex_Sans_Arabic({
   subsets: ['arabic'],
-  weight: ['500', '600'],
+  weight: ['400', '500', '600'],
   variable: '--font-plex-arabic',
   display: 'swap',
 })
 
-export const metadata: Metadata = {
-  title: `${SITE.name} — ${SITE.affiliation}`,
-  description: SITE.description,
-  openGraph: {
-    title: `${SITE.name} — ${SITE.affiliation}`,
-    description: SITE.description,
-    type: 'website',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const { t, locale } = await getI18n()
+  return {
+    title: t.meta.title,
+    description: t.meta.description,
+    openGraph: {
+      title: t.meta.title,
+      description: t.meta.description,
+      type: 'website',
+      locale: locale === 'ar' ? 'ar_OM' : 'en_GB',
+    },
+  }
 }
 
 export const viewport: Viewport = {
@@ -43,21 +49,24 @@ export const viewport: Viewport = {
   themeColor: '#f7f8f2',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { locale, dir, t } = await getI18n()
   return (
     // data-scroll-behavior lets Next jump instantly on route changes (e.g. /about#structure):
     // a smooth scroll would be cancelled when ScrollTrigger refreshes on the new page.
     <html
-      lang="en"
-      dir="ltr"
+      lang={locale}
+      dir={dir}
       data-scroll-behavior="smooth"
       className={`${spaceGrotesk.variable} ${manrope.variable} ${plexArabic.variable}`}
     >
       <body>
-        <a href="#main" className="skip-link">
-          Skip to content
-        </a>
-        {children}
+        <I18nProvider locale={locale}>
+          <a href="#main" className="skip-link">
+            {t.common.skipToContent}
+          </a>
+          {children}
+        </I18nProvider>
       </body>
     </html>
   )

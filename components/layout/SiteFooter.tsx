@@ -1,12 +1,14 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { PAGE_LINKS, SECTION_LINKS, SITE, sectionHref } from '@/content/site'
-import { ACTIVE_SOCIAL_ACCOUNTS } from '@/content/social'
+import { FOOTER_SOCIAL_ACCOUNTS } from '@/content/social'
+import { getI18n } from '@/lib/i18n/server'
 import { SocialIcon } from '@/components/ui/SocialIcon'
 import styles from './SiteFooter.module.css'
 
 /** `onHome` keeps section links as same-page fragments on the homepage. */
-export function SiteFooter({ onHome = true }: { onHome?: boolean }) {
+export async function SiteFooter({ onHome = true }: { onHome?: boolean }) {
+  const { t, l } = await getI18n()
   const year = new Date().getFullYear()
 
   return (
@@ -19,51 +21,67 @@ export function SiteFooter({ onHome = true }: { onHome?: boolean }) {
               <Image src="/brand/es-emblem.webp" alt="" width={64} height={64} className={styles.emblem} />
             </span>
             <div>
-              <p className={styles.name}>{SITE.name}</p>
-              <p className={styles.tagline}>Discover events, share projects, preserve achievements.</p>
+              <p className={styles.name}>{t.site.name}</p>
+              <p className={styles.tagline}>{t.footer.tagline}</p>
             </div>
           </div>
           <div className={styles.affiliation}>
-            <p className={styles.label}>A student society at</p>
+            <p className={styles.label}>{t.footer.studentSocietyAt}</p>
             {/* The wordmark keeps its original white field, colours and proportions. */}
             <div className={styles.wordmark}>
-              <Image src="/brand/squ-wordmark.png" alt="Sultan Qaboos University" width={399} height={126} sizes="200px" />
+              <Image src="/brand/squ-wordmark.png" alt={t.footer.squAlt} width={399} height={126} sizes="200px" />
             </div>
           </div>
         </div>
 
-        {ACTIVE_SOCIAL_ACCOUNTS.length > 0 && (
-          <section className={styles.follow} aria-labelledby="follow-title">
-            <h2 id="follow-title" className={styles.followTitle}>
-              Follow the Society
-            </h2>
-            <ul className={styles.socials}>
-              {ACTIVE_SOCIAL_ACCOUNTS.map((account) => (
-                <li key={account.platform}>
-                  <a href={account.url} className={styles.social} target="_blank" rel="noopener noreferrer">
-                    <SocialIcon platform={account.platform} className={styles.socialIcon} />
-                    <span>{account.label}</span>
-                    <span className="visually-hidden"> (opens in a new tab)</span>
+        {/* Official accounts only. An account without a verified URL is shown, but not linked. */}
+        <section className={styles.follow} aria-labelledby="follow-title">
+          <h2 id="follow-title" className={styles.followTitle}>
+            {t.footer.follow}
+          </h2>
+          <ul className={styles.socials}>
+            {FOOTER_SOCIAL_ACCOUNTS.map((account) => (
+              <li key={account.platform}>
+                {account.href ? (
+                  <a href={account.href} className={styles.social} target="_blank" rel="noopener noreferrer">
+                    <span className={styles.socialMark}>
+                      <SocialIcon platform={account.platform} className={styles.socialIcon} />
+                    </span>
+                    <span className={styles.socialName}>{l(account.label)}</span>
+                    <svg className={styles.external} viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                      <path d="M5.5 10.5l5-5M6.5 5.5h4v4" />
+                    </svg>
+                    <span className="visually-hidden"> {t.common.opensInNewTab}</span>
                   </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+                ) : (
+                  <span className={styles.social} data-pending="">
+                    <span className={styles.socialMark}>
+                      <SocialIcon platform={account.platform} className={styles.socialIcon} />
+                    </span>
+                    <span className={styles.socialText}>
+                      <span className={styles.socialName}>{l(account.label)}</span>
+                      <span className={styles.socialStatus}>{t.footer.linkToCome}</span>
+                    </span>
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
 
-        <nav aria-label="Footer" className={styles.nav}>
+        <nav aria-label={t.footer.navLabel} className={styles.nav}>
           <ul className={styles.links}>
             {SECTION_LINKS.map((link) => (
               <li key={link.id}>
                 <a href={sectionHref(link.id, onHome)} className={styles.link}>
-                  {link.label}
+                  {t.nav.links[link.id]}
                 </a>
               </li>
             ))}
             {PAGE_LINKS.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className={styles.link}>
-                  {link.label}
+                  {t.nav.links[link.id]}
                 </Link>
               </li>
             ))}
@@ -73,7 +91,7 @@ export function SiteFooter({ onHome = true }: { onHome?: boolean }) {
               {SITE.contact.map((c) => (
                 <li key={c.href}>
                   <a href={c.href} className={styles.link}>
-                    {c.label}
+                    {l(c.label)}
                   </a>
                 </li>
               ))}
@@ -82,10 +100,8 @@ export function SiteFooter({ onHome = true }: { onHome?: boolean }) {
         </nav>
 
         <div className={styles.base}>
-          <p>
-            © {year} {SITE.name}, {SITE.affiliation}.
-          </p>
-          <p>Preview site. Platform features arrive in phases.</p>
+          <p>{t.footer.copyright(year, t.site.name, t.site.affiliation)}</p>
+          <p>{t.footer.previewSite}</p>
         </div>
       </div>
     </footer>

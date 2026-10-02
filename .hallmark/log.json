@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-10-02",
+    "macrostructure": "Ecosystem Index (Draft 5: bilingual, immersive overview)",
+    "theme": "custom",
+    "theme_axes": "light / grotesk-sans / cool, with one deep-blue atmospheric band",
+    "vibe": "contemporary engineering exhibition, precise and warm",
+    "nav": "N5 floating pill, frosted glass (pale cool tint, 18px blur) + English | العربية switch",
+    "footer": "Ft1 mast-headed (navy closing band) + Follow the Society (unlinked until verified)",
+    "enrichment": "WebGL logo sculpture; society photographs in Overview (layered depth parallax) and Activities; stat icons in the logo's leaf frame",
+    "brief": "Engineering Society, SQU · Draft 5: stats (members/visitors/projects/events, placeholders until verified), overview photo atmosphere, activity photos, full EN/AR with RTL, glass navbar, footer social"
+  },
+  {
+    "date": "2026-09-25",
+    "macrostructure": "Ecosystem Index (Draft 4: society sections)",
+    "theme": "custom",
+    "theme_axes": "light / grotesk-sans / cool",
+    "vibe": "contemporary engineering exhibition, precise and warm",
+    "nav": "N5 floating pill (+ Activities, About)",
+    "footer": "Ft1 mast-headed (navy closing band)",
+    "enrichment": "Stats strip, overview, image-led activities, leadership tree with leaf-frame portraits, About structure chart, activities archive",
+    "brief": "Engineering Society, SQU · Draft 4: overview, figures, activities, leadership, About and archive"
+  },
+  {
     "date": "2026-09-23",
     "macrostructure": "Ecosystem Index (Draft 3 refinement)",
     "theme": "custom",
@@ -8,7 +30,7 @@
     "nav": "N5 floating pill",
     "footer": "Ft1 mast-headed (navy closing band)",
     "enrichment": "WebGL four-module sculpture derived from the society logo + subject-specific SVG drawings",
-    "brief": "Engineering Society, SQU \u00b7 Draft 3: logo sculpture, Impact removed, distinct section rhythms"
+    "brief": "Engineering Society, SQU · Draft 3: logo sculpture, Impact removed, distinct section rhythms"
   },
   {
     "date": "2026-09-22",
@@ -19,6 +41,6 @@
     "nav": "N5 floating pill",
     "footer": "Ft1 mast-headed",
     "enrichment": "WebGL exploded-view assembly (hero) + hand-built SVG drafting plates",
-    "brief": "Engineering Society, Sultan Qaboos University \u00b7 landing page Draft 2"
+    "brief": "Engineering Society, Sultan Qaboos University · landing page Draft 2"
   }
 ]

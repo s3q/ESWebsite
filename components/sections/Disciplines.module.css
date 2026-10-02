@@ -132,3 +132,7 @@
     align-self: start;
   }
 }
+
+:global(html[dir='rtl']) .rule {
+  transform-origin: right center;
+}

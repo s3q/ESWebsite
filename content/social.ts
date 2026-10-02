@@ -1,10 +1,15 @@
+import type { Localized } from '@/lib/i18n'
+
 /**
  * The society's social accounts — the single place to configure them.
  *
  * No verified account URLs exist in the project yet (Draft 1's footer used empty `#` links),
- * so every `url` is null and the footer's "Follow the Society" area stays hidden. Paste the
- * full profile URL for each account the society actually runs, for example
- * 'https://www.instagram.com/<handle>/'. Accounts left as null are simply not shown.
+ * so every `url` is null. Paste the full profile URL for each account the society actually
+ * runs, for example 'https://www.instagram.com/<handle>/'.
+ *
+ * - `primary` accounts (Instagram, LinkedIn) always appear in the footer. Without a URL they
+ *   are shown unlinked, marked "Link to come", so nothing points to a guessed address.
+ * - Other accounts appear only once they have a valid URL.
  *
  * URLs are validated: they must be https, on the platform's own domain, and point to a
  * profile path — a bare platform homepage is rejected.
@@ -14,17 +19,18 @@ export type SocialPlatform = 'instagram' | 'x' | 'linkedin' | 'youtube' | 'tikto
 
 export interface SocialAccount {
   platform: SocialPlatform
-  /** Accessible platform name shown beside the icon. */
-  label: string
+  /** Platform name shown beside the icon. */
+  label: Localized
   url: string | null
+  primary?: boolean
 }
 
 export const SOCIAL_ACCOUNTS: SocialAccount[] = [
-  { platform: 'instagram', label: 'Instagram', url: null },
-  { platform: 'x', label: 'X', url: null },
-  { platform: 'linkedin', label: 'LinkedIn', url: null },
-  { platform: 'youtube', label: 'YouTube', url: null },
-  { platform: 'tiktok', label: 'TikTok', url: null },
+  { platform: 'instagram', label: { en: 'Instagram', ar: 'إنستغرام' }, url: null, primary: true },
+  { platform: 'linkedin', label: { en: 'LinkedIn', ar: 'لينكدإن' }, url: null, primary: true },
+  { platform: 'x', label: { en: 'X', ar: 'إكس' }, url: null },
+  { platform: 'youtube', label: { en: 'YouTube', ar: 'يوتيوب' }, url: null },
+  { platform: 'tiktok', label: { en: 'TikTok', ar: 'تيك توك' }, url: null },
 ]
 
 const PLATFORM_HOSTS: Record<SocialPlatform, string[]> = {
@@ -48,7 +54,11 @@ export function isValidProfileUrl(platform: SocialPlatform, url: string | null):
   }
 }
 
-/** Accounts with a valid, configured profile URL — the only ones the footer renders. */
-export const ACTIVE_SOCIAL_ACCOUNTS = SOCIAL_ACCOUNTS.filter(
-  (a): a is SocialAccount & { url: string } => isValidProfileUrl(a.platform, a.url),
-)
+/**
+ * What the footer shows: every primary account (linked when its URL is valid) plus any other
+ * account with a valid URL. `href` is null for an account still waiting for its URL.
+ */
+export const FOOTER_SOCIAL_ACCOUNTS = SOCIAL_ACCOUNTS.flatMap((a) => {
+  const href = isValidProfileUrl(a.platform, a.url) ? a.url : null
+  return href || a.primary ? [{ ...a, href }] : []
+})

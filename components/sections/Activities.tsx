@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { ACTIVITIES } from '@/content/activities'
 import { IconArrowRight } from '@/components/ui/icons'
+import { getI18n } from '@/lib/i18n/server'
 import { ActivitiesShowcase } from './ActivitiesShowcase'
 import styles from './Activities.module.css'
 
 /** The society's recurring programmes. Dated events stay in the Events section. */
-export function Activities() {
+export async function Activities() {
+  const { t } = await getI18n()
   const hasPhotos = ACTIVITIES.some((a) => a.photos.main)
   const hasFigures = ACTIVITIES.some((a) => a.stats.length > 0)
 
@@ -14,18 +16,16 @@ export function Activities() {
       <div className="container">
         <header className="section-head">
           <h2 id="activities-title" className="section-title" data-reveal="heading">
-            Engineering Society Activities
+            {t.activities.title}
           </h2>
           <div className={styles.headAside} data-reveal="rise">
-            <p className="section-lead">
-              Explore the programmes, gatherings, and experiences that bring our community together.
-            </p>
+            <p className="section-lead">{t.activities.lead}</p>
             {(!hasPhotos || !hasFigures) && (
               <p className="preview-note">
                 <span className="status-dot" aria-hidden="true" />
                 <span>
-                  <strong>Photographs and figures to come.</strong> They’ll appear with each programme once the
-                  society supplies and confirms them.
+                  <strong>{hasPhotos ? t.activities.figuresStrong : t.activities.photosStrong}</strong>{' '}
+                  {hasPhotos ? t.activities.figuresBody : t.activities.photosBody}
                 </span>
               </p>
             )}
@@ -36,7 +36,7 @@ export function Activities() {
 
         <div className={styles.cta} data-reveal="rise">
           <Link href="/activities" className="btn btn--primary">
-            Explore Previous Activities
+            {t.activities.explorePrevious}
             <IconArrowRight className="btn__arrow" />
           </Link>
         </div>

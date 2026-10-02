@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { IconArrowRight } from '@/components/ui/icons'
+import { getI18n } from '@/lib/i18n/server'
 import { HeroArt } from './HeroArt'
 import styles from './Hero.module.css'
 
@@ -10,7 +11,8 @@ const order = (i: number) => ({ '--i': i }) as CSSProperties
  * while the sculpture assembles, then native scrolling carries the whole stage away as
  * Events arrives. No scroll interception, and the actions stay usable throughout.
  */
-export function Hero() {
+export async function Hero() {
+  const { t } = await getI18n()
   return (
     <section id="top" className={styles.hero} aria-labelledby="hero-title">
       <div className={styles.stage}>
@@ -18,25 +20,25 @@ export function Hero() {
           <div className={styles.copy}>
             <p className={`${styles.eyebrow} intro-item`} style={order(0)}>
               <span className={styles.eyebrowMark} aria-hidden="true" />
-              Engineering Society · Sultan Qaboos University
+              {t.site.eyebrow}
             </p>
             <h1 id="hero-title" className={`${styles.title} intro-item`} style={order(1)}>
-              <span className={styles.line}>Where ideas</span>{' '}
+              <span className={styles.line}>{t.hero.titleStart}</span>{' '}
               <span className={styles.line}>
-                take shape<span className={styles.stop}>.</span>
+                {t.hero.titleEnd}
+                <span className={styles.stop}>.</span>
               </span>
             </h1>
             <p className={`${styles.lead} intro-item`} style={order(2)}>
-              Meet the people, build the projects, and discover the experiences that move your engineering journey
-              forward.
+              {t.hero.lead}
             </p>
             <div className={`${styles.actions} intro-item`} style={order(3)}>
               <a href="#events" className="btn btn--primary">
-                Explore Events
+                {t.hero.exploreEvents}
                 <IconArrowRight className="btn__arrow" />
               </a>
               <a href="#projects" className="btn btn--secondary">
-                Discover Projects
+                {t.hero.discoverProjects}
               </a>
             </div>
           </div>

@@ -79,13 +79,29 @@ p {
   text-wrap: pretty;
 }
 
-/* Arabic runs keep their own face, natural spacing and a taller line for the script's
+/* Arabic runs inside English pages keep their own face and a taller line for the script's
    ascenders and descenders. Direction is set per element with dir="rtl". */
-:lang(ar) {
+:not(html)[lang='ar'] {
   font-family: var(--font-arabic);
-  letter-spacing: 0;
   line-height: 1.45;
   font-feature-settings: normal;
+}
+
+/* Arabic is never letter-spaced: tracking breaks the joins between letters. This covers the
+   Arabic site and Arabic runs on the English one, whatever a component's own tracking. */
+:lang(ar) {
+  letter-spacing: 0 !important;
+}
+
+/* The Arabic site: headings take the taller Arabic leading over the Latin display settings. */
+html[lang='ar'] :is(h1, h2, h3, h4) {
+  line-height: var(--leading-heading);
+}
+
+/* Directional icons (arrows) point the way the page reads. `scale` composes with any hover
+   `transform`, so a nudge toward the end of the line still moves the right way. */
+html[dir='rtl'] [data-icon='arrow'] {
+  scale: -1 1;
 }
 
 a {
@@ -132,7 +148,7 @@ main:focus {
 .skip-link {
   position: fixed;
   top: var(--space-3);
-  left: var(--space-3);
+  inset-inline-start: var(--space-3);
   z-index: 100;
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-button);

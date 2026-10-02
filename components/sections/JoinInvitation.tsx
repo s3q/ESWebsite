@@ -1,10 +1,12 @@
 import { SITE, sectionHref } from '@/content/site'
+import { getI18n } from '@/lib/i18n/server'
 import { IconArrowRight } from '@/components/ui/icons'
 import { PreviewAction } from '@/components/ui/PreviewAction'
 import styles from './JoinInvitation.module.css'
 
 /** `onHome` keeps the events link a same-page fragment on the homepage. */
-export function JoinInvitation({ onHome = true }: { onHome?: boolean }) {
+export async function JoinInvitation({ onHome = true }: { onHome?: boolean }) {
+  const { t } = await getI18n()
   const eventsHref = sectionHref('events', onHome)
   return (
     <section id="join" className={styles.join} aria-labelledby="join-title">
@@ -17,38 +19,36 @@ export function JoinInvitation({ onHome = true }: { onHome?: boolean }) {
       </div>
       <div className={`container ${styles.inner}`}>
         <h2 id="join-title" className={styles.title} data-reveal="heading">
-          Make your next idea a shared one<span className={styles.stop}>.</span>
+          {t.join.title}
+          <span className={styles.stop}>.</span>
         </h2>
         <div className={styles.aside} data-reveal="rise">
-          <p className={styles.body}>
-            Membership starts with one permanent profile: your events, certificates and projects in one place,
-            carried forward every year. Member registration is part of the platform’s first release.
-          </p>
+          <p className={styles.body}>{t.join.body}</p>
           <div className={styles.actions}>
             {SITE.membershipUrl ? (
               <a href={SITE.membershipUrl} className="btn btn--on-dark">
-                Join the Society
+                {t.join.join}
                 <IconArrowRight className="btn__arrow" />
               </a>
             ) : (
               <PreviewAction
-                label="Join the Society"
+                label={t.join.join}
                 variant="on-dark"
                 arrow
-                title="Membership registration opens soon"
-                next={{ href: eventsHref, label: 'Explore events' }}
+                title={t.join.dialogTitle}
+                next={{ href: eventsHref, label: t.join.dialogNext }}
               >
-                <p>Registration isn’t open on this site yet, and nothing you do here is submitted.</p>
-                <p>When it opens, you’ll:</p>
+                <p>{t.join.dialogIntro}</p>
+                <p>{t.join.dialogWhenOpen}</p>
                 <ul>
-                  <li>create one profile with your name, university email, student ID, year and major;</li>
-                  <li>receive a confirmation email with your platform login;</li>
-                  <li>keep that same profile, and its history, every year after.</li>
+                  {t.join.dialogSteps.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
                 </ul>
               </PreviewAction>
             )}
             <a href={eventsHref} className="btn btn--outline-dark">
-              Explore Events
+              {t.join.exploreEvents}
             </a>
           </div>
         </div>

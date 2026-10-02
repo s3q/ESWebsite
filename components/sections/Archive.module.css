@@ -251,3 +251,13 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* Arabic names sit flush with the start of the line on either site. */
+:global(html[dir='rtl']) .programmeAr,
+:global(html[dir='rtl']) .editionProgramme {
+  text-align: right;
+}
+
+:global(html[dir='rtl']) .programmeRule {
+  transform-origin: right center;
+}

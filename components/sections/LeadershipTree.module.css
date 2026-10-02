@@ -78,21 +78,21 @@
   display: block;
   width: 1px;
   height: var(--space-6);
-  margin-left: var(--rail-x);
+  margin-inline-start: var(--rail-x);
   background: var(--connector);
 }
 
 .branch {
   position: relative;
   width: 100%;
-  padding-left: var(--rail-x);
+  padding-inline-start: var(--rail-x);
 }
 
 .bar {
   position: absolute;
   top: 0;
   bottom: 54px;
-  left: var(--rail-x);
+  inset-inline-start: var(--rail-x);
   width: 1px;
   background: var(--connector);
 }
@@ -102,12 +102,13 @@
   display: flex;
   align-items: center;
   min-height: 108px;
-  padding: var(--space-3) 0 var(--space-3) var(--space-6);
+  padding-block: var(--space-3);
+  padding-inline: var(--space-6) 0;
 }
 
 .drop {
   position: absolute;
-  left: 0;
+  inset-inline-start: 0;
   top: 50%;
   width: calc(var(--space-6) - var(--space-2));
   height: 1px;
@@ -149,7 +150,7 @@
   }
 
   .branch {
-    padding-left: 0;
+    padding-inline-start: 0;
   }
 
   /* Spans exactly from the first Vice President's centre to the last one's. */

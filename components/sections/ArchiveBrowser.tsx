@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { Activity, ActivityEdition, ActivityId } from '@/content/activities'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import { IconArrowRight } from '@/components/ui/icons'
 import { PhotoPlaceholder } from '@/components/ui/PhotoPlaceholder'
 import styles from './Archive.module.css'
@@ -12,6 +13,7 @@ import styles from './Archive.module.css'
  * present in the data, and live in the URL (?programme=&year=) so views can be shared.
  */
 export function ArchiveBrowser({ editions, activities }: { editions: ActivityEdition[]; activities: Activity[] }) {
+  const { t, l } = useI18n()
   const params = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -40,9 +42,9 @@ export function ArchiveBrowser({ editions, activities }: { editions: ActivityEdi
   return (
     <div className={styles.browser}>
       <div className={styles.filters}>
-        <div className={styles.filterGroup} role="group" aria-label="Filter by programme">
+        <div className={styles.filterGroup} role="group" aria-label={t.archive.filterProgramme}>
           <Chip active={!programme} onClick={() => set('programme', null)}>
-            All programmes
+            {t.archive.allProgrammes}
           </Chip>
           {programmes.map((p) => (
             <Chip key={p.id} active={programme === p.id} onClick={() => set('programme', p.id)} lang="ar">
@@ -50,9 +52,9 @@ export function ArchiveBrowser({ editions, activities }: { editions: ActivityEdi
             </Chip>
           ))}
         </div>
-        <div className={styles.filterGroup} role="group" aria-label="Filter by year">
+        <div className={styles.filterGroup} role="group" aria-label={t.archive.filterYear}>
           <Chip active={!year} onClick={() => set('year', null)}>
-            All years
+            {t.archive.allYears}
           </Chip>
           {years.map((y) => (
             <Chip key={y} active={year === y} onClick={() => set('year', String(y))}>
@@ -63,7 +65,7 @@ export function ArchiveBrowser({ editions, activities }: { editions: ActivityEdi
       </div>
 
       <p className="visually-hidden" aria-live="polite">
-        Showing {visible.length} {visible.length === 1 ? 'edition' : 'editions'}
+        {t.archive.showing(visible.length)}
       </p>
 
       {visible.length > 0 ? (
@@ -74,20 +76,27 @@ export function ArchiveBrowser({ editions, activities }: { editions: ActivityEdi
               <li key={edition.id} className={styles.edition}>
                 <div className={styles.editionMedia}>
                   {edition.image ? (
-                    <Image src={edition.image.src} alt={edition.image.alt} fill sizes="(min-width: 64rem) 30vw, 100vw" className={styles.photo} />
+                    <Image
+                      src={edition.image.src}
+                      alt={l(edition.image.alt)}
+                      fill
+                      sizes="(min-width: 64rem) 30vw, 100vw"
+                      className={styles.photo}
+                      style={edition.image.focus ? { objectPosition: edition.image.focus } : undefined}
+                    />
                   ) : (
-                    <PhotoPlaceholder nameAr={activity?.nameAr ?? ''} ratio="4:3" />
+                    <PhotoPlaceholder nameAr={activity?.nameAr ?? ''} label={t.common.photoToCome} ratio="4:3" />
                   )}
                 </div>
                 <p className={styles.editionProgramme} lang="ar" dir="rtl">
                   {activity?.nameAr}
                 </p>
-                <h2 className={styles.editionTitle}>{edition.title}</h2>
+                <h2 className={styles.editionTitle}>{l(edition.title)}</h2>
                 <p className={styles.editionYear}>{edition.year}</p>
-                {edition.summary && <p className={styles.editionSummary}>{edition.summary}</p>}
+                {edition.summary && <p className={styles.editionSummary}>{l(edition.summary)}</p>}
                 {edition.href && (
                   <a href={edition.href} className={styles.editionLink}>
-                    View this edition
+                    {t.archive.viewEdition}
                     <IconArrowRight className={styles.linkArrow} />
                   </a>
                 )}
@@ -96,7 +105,7 @@ export function ArchiveBrowser({ editions, activities }: { editions: ActivityEdi
           })}
         </ul>
       ) : (
-        <p className={styles.noMatch}>No editions match these filters.</p>
+        <p className={styles.noMatch}>{t.archive.noMatch}</p>
       )}
     </div>
   )

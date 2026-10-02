@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
 import { useRef } from 'react'
 import type { Activity } from '@/content/activities'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import { IconArrowRight } from '@/components/ui/icons'
 import { PlaceholderArt, PlaceholderFrame } from '@/components/ui/PhotoPlaceholder'
 import { DESKTOP_QUERY, FINE_POINTER_QUERY, MOTION } from '@/lib/motion'
@@ -21,11 +22,12 @@ const RATIO: Record<Layout, { label: string; css: string }> = {
   pair: { label: '4:3', css: '4 / 3' },
 }
 
-/** Where each image unmasks from: its outer edge. */
-const MASK_FROM: Record<Layout, string> = {
-  wide: 'inset(0% 100% 0% 0%)',
-  'wide-reverse': 'inset(0% 0% 0% 100%)',
-  pair: 'inset(100% 0% 0% 0%)',
+/** Where each image unmasks from: its outer edge (mirrored with the layout on the Arabic site). */
+const FROM_START = 'inset(0% 100% 0% 0%)'
+const FROM_END = 'inset(0% 0% 0% 100%)'
+const MASK_FROM: Record<'ltr' | 'rtl', Record<Layout, string>> = {
+  ltr: { wide: FROM_START, 'wide-reverse': FROM_END, pair: 'inset(100% 0% 0% 0%)' },
+  rtl: { wide: FROM_END, 'wide-reverse': FROM_START, pair: 'inset(100% 0% 0% 0%)' },
 }
 
 const TILT_MAX = 2
@@ -52,6 +54,7 @@ function toRows(activities: Activity[]) {
 
 export function ActivitiesShowcase({ activities }: { activities: Activity[] }) {
   const rootRef = useRef<HTMLDivElement>(null)
+  const { dir } = useI18n()
 
   useGSAP(
     () => {
@@ -72,7 +75,7 @@ export function ActivitiesShowcase({ activities }: { activities: Activity[] }) {
           if (mask) {
             tl.fromTo(
               mask,
-              { clipPath: mask.dataset.maskFrom ?? MASK_FROM.pair },
+              { clipPath: MASK_FROM[dir][(item.dataset.layout as Layout) ?? 'pair'] },
               { clipPath: 'inset(0% 0% 0% 0%)', duration: MOTION.mask.duration, clearProps: 'clipPath' },
               0,
             )
@@ -133,7 +136,7 @@ export function ActivitiesShowcase({ activities }: { activities: Activity[] }) {
 
       return () => mm.revert()
     },
-    { scope: rootRef },
+    { scope: rootRef, dependencies: [dir], revertOnUpdate: true },
   )
 
   return (
@@ -154,33 +157,31 @@ export function ActivitiesShowcase({ activities }: { activities: Activity[] }) {
 }
 
 function ActivityFeature({ activity, layout }: { activity: Activity; layout: Layout }) {
+  const { t, l, locale } = useI18n()
   const titleId = `activity-${activity.id}-title`
   const main = activity.photos.main
   return (
     <article id={`activity-${activity.id}`} className={styles.activity} data-layout={layout} data-activity="" aria-labelledby={titleId}>
       <div className={styles.media} data-tilt="">
-        <div
-          className={styles.mask}
-          data-mask=""
-          data-mask-from={MASK_FROM[layout]}
-          style={{ aspectRatio: RATIO[layout].css }}
-        >
+        <div className={styles.mask} data-mask="" style={{ aspectRatio: RATIO[layout].css }}>
           <div className={styles.parallax} data-parallax="">
             <div className={styles.zoom}>
               {main ? (
                 <Image
                   src={main.src}
-                  alt={main.alt}
+                  alt={l(main.alt)}
                   fill
-                  sizes={layout === 'pair' ? '(min-width: 64rem) 42vw, 100vw' : '(min-width: 64rem) 58vw, 100vw'}
+                  sizes={layout === 'pair' ? '(min-width: 48rem) 46vw, 100vw' : '(min-width: 64rem) 58vw, 100vw'}
+                  quality={90}
                   className={styles.photo}
+                  style={main.focus ? { objectPosition: main.focus } : undefined}
                 />
               ) : (
                 <PlaceholderArt nameAr={activity.nameAr} />
               )}
             </div>
           </div>
-          {!main && <PlaceholderFrame ratio={RATIO[layout].label} />}
+          {!main && <PlaceholderFrame label={t.common.photoToCome} ratio={RATIO[layout].label} />}
         </div>
       </div>
 
@@ -189,19 +190,22 @@ function ActivityFeature({ activity, layout }: { activity: Activity; layout: Lay
         <h3 id={titleId} className={styles.title} lang="ar" dir="rtl" data-part="text">
           {activity.nameAr}
         </h3>
-        <p className={styles.gloss} data-part="text">
-          {activity.nameEn}
-        </p>
+        {/* The English site glosses the society's Arabic name; the Arabic site needs no gloss. */}
+        {locale === 'en' && (
+          <p className={styles.gloss} data-part="text">
+            {activity.nameEn}
+          </p>
+        )}
         <p className={styles.description} data-part="text">
-          {activity.description}
+          {l(activity.description)}
         </p>
         {activity.stats.length > 0 && (
           <dl className={styles.stats} data-part="text">
             {activity.stats.map((s) => (
-              <div key={s.label}>
+              <div key={s.label.en}>
                 <dt>
-                  {s.label}
-                  <span className={styles.statPeriod}>{s.period}</span>
+                  {l(s.label)}
+                  <span className={styles.statPeriod}>{l(s.period)}</span>
                 </dt>
                 <dd>{s.value}</dd>
               </div>
@@ -210,7 +214,7 @@ function ActivityFeature({ activity, layout }: { activity: Activity; layout: Lay
         )}
         {activity.href && (
           <a href={activity.href} className={styles.link} data-part="text">
-            Previous editions
+            {t.activities.previousEditions}
             <IconArrowRight className={styles.linkArrow} />
           </a>
         )}

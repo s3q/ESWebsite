@@ -21,7 +21,7 @@ export function PlaceholderArt({ nameAr }: { nameAr: string }) {
   )
 }
 
-export function PlaceholderFrame({ ratio }: { ratio: string }) {
+export function PlaceholderFrame({ label, ratio }: { label: string; ratio: string }) {
   return (
     <div className={styles.frame} aria-hidden="true">
       <span className={styles.crop}>
@@ -31,17 +31,17 @@ export function PlaceholderFrame({ ratio }: { ratio: string }) {
       </span>
       <span className={styles.tag}>
         <IconCamera className={styles.icon} />
-        Photograph to come · {ratio}
+        {label} · <span dir="ltr">{ratio}</span>
       </span>
     </div>
   )
 }
 
-export function PhotoPlaceholder({ nameAr, ratio }: { nameAr: string; ratio: string }) {
+export function PhotoPlaceholder({ nameAr, label, ratio }: { nameAr: string; label: string; ratio: string }) {
   return (
     <div className={styles.placeholder}>
       <PlaceholderArt nameAr={nameAr} />
-      <PlaceholderFrame ratio={ratio} />
+      <PlaceholderFrame label={label} ratio={ratio} />
     </div>
   )
 }

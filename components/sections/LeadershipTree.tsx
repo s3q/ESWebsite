@@ -5,6 +5,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useRef } from 'react'
 import { LEADERSHIP, type Position } from '@/content/structure'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import { Portrait } from '@/components/ui/Portrait'
 import { DESKTOP_TREE_QUERY, MOTION } from '@/lib/motion'
 import styles from './LeadershipTree.module.css'
@@ -12,21 +13,28 @@ import styles from './LeadershipTree.module.css'
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 function Profile({ position, size, bilingual }: { position: Position; size: 'lg' | 'md'; bilingual: boolean }) {
+  const { t, l, locale } = useI18n()
   const holder = position.holder
   return (
     <div className={styles.profile} data-portrait-host="" data-vacant={!holder || undefined}>
-      <Portrait person={holder} size={size} className={styles.portrait} />
+      <Portrait
+        person={holder}
+        alt={holder?.portrait ? l(holder.portrait.alt) : ''}
+        size={size}
+        className={styles.portrait}
+      />
       <div className={styles.text}>
         <p className={styles.role}>
-          {position.titleEn}
-          {bilingual && (
+          {l(position.title)}
+          {/* The English About page also gives each role's Arabic title. */}
+          {bilingual && locale === 'en' && (
             <span className={styles.roleAr} lang="ar" dir="rtl">
-              {position.titleAr}
+              {position.title.ar}
             </span>
           )}
         </p>
-        <p className={styles.name}>{holder?.name ?? 'Name to be announced'}</p>
-        {position.responsibility && <p className={styles.responsibility}>{position.responsibility}</p>}
+        <p className={styles.name}>{holder ? l(holder.name) : t.leadership.nameToBeAnnounced}</p>
+        {position.responsibility && <p className={styles.responsibility}>{l(position.responsibility)}</p>}
       </div>
     </div>
   )
@@ -38,6 +46,7 @@ function Profile({ position, size, bilingual }: { position: Position; size: 'lg'
  */
 export function LeadershipTree({ leadership = LEADERSHIP, bilingual = false }: { leadership?: typeof LEADERSHIP; bilingual?: boolean }) {
   const rootRef = useRef<HTMLDivElement>(null)
+  const { t, dir } = useI18n()
 
   useGSAP(
     () => {
@@ -63,19 +72,25 @@ export function LeadershipTree({ leadership = LEADERSHIP, bilingual = false }: {
             '[data-part="drop"]',
             wide
               ? { scaleY: 0, transformOrigin: 'top center', duration: 0.3, stagger: 0.06, clearProps: 'transform' }
-              : { scaleX: 0, transformOrigin: 'left center', duration: 0.3, stagger: 0.1, clearProps: 'transform' },
+              : {
+                  scaleX: 0,
+                  transformOrigin: dir === 'rtl' ? 'right center' : 'left center',
+                  duration: 0.3,
+                  stagger: 0.1,
+                  clearProps: 'transform',
+                },
             '-=0.15',
           )
           .from('[data-part="vp"]', { opacity: 0, y: 16, duration: 0.55, stagger: 0.1, clearProps: 'opacity,transform' }, '-=0.2')
       })
       return () => mm.revert()
     },
-    { scope: rootRef },
+    { scope: rootRef, dependencies: [dir], revertOnUpdate: true },
   )
 
   return (
     <div ref={rootRef} className={styles.tree}>
-      <ul className={styles.root} aria-label="Senior leadership">
+      <ul className={styles.root} aria-label={t.leadership.seniorLeadership}>
         <li className={styles.top}>
           <div className={styles.president} data-part="president">
             <Profile position={leadership.president} size="lg" bilingual={bilingual} />
@@ -83,7 +98,7 @@ export function LeadershipTree({ leadership = LEADERSHIP, bilingual = false }: {
           <span className={styles.stem} data-part="stem" aria-hidden="true" />
           <div className={styles.branch}>
             <span className={styles.bar} data-part="bar" aria-hidden="true" />
-            <ul className={styles.vps} aria-label="Vice Presidents">
+            <ul className={styles.vps} aria-label={t.leadership.vicePresidents}>
               {leadership.vicePresidents.map((vp) => (
                 <li key={vp.id} className={styles.vp}>
                   <span className={styles.drop} data-part="drop" aria-hidden="true" />

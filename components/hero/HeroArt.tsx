@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import dynamic from 'next/dynamic'
 import Image, { getImageProps } from 'next/image'
 import { Component, useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import { DESKTOP_QUERY, FINE_POINTER_QUERY, REDUCED_MOTION_QUERY } from '@/lib/motion'
 import { useMediaQuery } from '@/lib/useMediaQuery'
 import { hasWebGL, prefersSaveData } from '@/lib/webgl'
@@ -78,6 +79,7 @@ function AssembledStill({ className, eager }: { className: string; eager: boolea
 }
 
 export function HeroArt() {
+  const { t } = useI18n()
   const [artEl, setArtEl] = useState<HTMLDivElement | null>(null)
   const [captionEl, setCaptionEl] = useState<HTMLParagraphElement | null>(null)
   const [near, setNear] = useState(false)
@@ -182,7 +184,7 @@ export function HeroArt() {
             <span />
             <span />
           </span>
-          Different disciplines, one society.
+          {t.hero.caption}
         </p>
       </div>
     </div>

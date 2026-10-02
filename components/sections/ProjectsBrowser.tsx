@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { DISCIPLINE_BY_ID, type DisciplineId } from '@/content/disciplines'
 import type { ArchiveProject } from '@/content/projects'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import { IconArchive, IconArrowRight } from '@/components/ui/icons'
 import { ItemMedia } from '@/components/ui/Plate'
 import { PROJECT_FILTER_EVENT } from '@/lib/events'
@@ -17,6 +18,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 type Filter = DisciplineId | 'all'
 
 export function ProjectsBrowser({ projects }: { projects: ArchiveProject[] }) {
+  const { t, l } = useI18n()
   const [filter, setFilter] = useState<Filter>('all')
   const rootRef = useRef<HTMLDivElement>(null)
   // Reveals are for arrival; once someone has filtered, results simply crossfade in place.
@@ -53,8 +55,8 @@ export function ProjectsBrowser({ projects }: { projects: ArchiveProject[] }) {
 
   const summary =
     filter === 'all'
-      ? `Showing all ${visible.length} sample projects`
-      : `Showing ${visible.length} sample ${visible.length === 1 ? 'project' : 'projects'} in ${DISCIPLINE_BY_ID[filter].name}`
+      ? t.projects.showingAll(visible.length)
+      : t.projects.showingIn(visible.length, l(DISCIPLINE_BY_ID[filter].name))
 
   // Portfolio motion: a mask reveal on first arrival, gentle parallax in the drawings, and a
   // restrained tilt on fine-pointer desktops. Each lives on its own element.
@@ -135,13 +137,13 @@ export function ProjectsBrowser({ projects }: { projects: ArchiveProject[] }) {
 
   return (
     <div ref={rootRef} className={styles.browser}>
-      <div className={styles.filters} role="group" aria-label="Filter projects by discipline">
+      <div className={styles.filters} role="group" aria-label={t.projects.filterLabel}>
         <FilterButton active={filter === 'all'} count={projects.length} onClick={() => choose('all')}>
-          All
+          {t.projects.all}
         </FilterButton>
         {disciplines.map((id) => (
           <FilterButton key={id} active={filter === id} count={counts.get(id) ?? 0} onClick={() => choose(id)}>
-            {DISCIPLINE_BY_ID[id].shortName}
+            {l(DISCIPLINE_BY_ID[id].shortName)}
           </FilterButton>
         ))}
       </div>
@@ -164,13 +166,13 @@ export function ProjectsBrowser({ projects }: { projects: ArchiveProject[] }) {
 
         {more.length > 0 && (
           <div className={styles.more}>
-            <h3 className={styles.moreTitle}>Also in the archive</h3>
+            <h3 className={styles.moreTitle}>{t.projects.alsoInArchive}</h3>
             <ul className={styles.moreList}>
               {more.map((p) => (
                 <li key={p.id} className={styles.moreRow}>
-                  <span className={styles.moreName}>{p.title}</span>
+                  <span className={styles.moreName}>{l(p.title)}</span>
                   <span className={styles.moreMeta}>
-                    {DISCIPLINE_BY_ID[p.discipline].shortName} · {p.year} · Sample
+                    {l(DISCIPLINE_BY_ID[p.discipline].shortName)} · <span dir="ltr">{p.year}</span> · {t.common.sample}
                   </span>
                 </li>
               ))}
@@ -179,7 +181,7 @@ export function ProjectsBrowser({ projects }: { projects: ArchiveProject[] }) {
         )}
 
         {filter !== 'all' && visible.length === 1 && (
-          <p className={styles.note}>This is the only sample project in this discipline.</p>
+          <p className={styles.note}>{t.projects.onlyOne}</p>
         )}
       </div>
     </div>
@@ -209,69 +211,73 @@ function FilterButton({
 
 /** The title links to the archive entry once one exists; the whole card becomes its target. */
 function ProjectTitle({ project, className }: { project: ArchiveProject; className: string }) {
+  const { l } = useI18n()
   return (
     <h3 id={`${project.id}-title`} className={className}>
       {project.href ? (
         <a href={project.href} className={styles.stretched}>
-          {project.title}
+          {l(project.title)}
           <IconArrowRight className={styles.titleArrow} />
         </a>
       ) : (
-        project.title
+        l(project.title)
       )}
     </h3>
   )
 }
 
 function ArchiveStatus({ project }: { project: ArchiveProject }) {
+  const { t } = useI18n()
   if (project.href) return null
   return (
     <p className={styles.archiveStatus}>
       <IconArchive className={styles.archiveIcon} />
-      Full archive entry opens in Phase 3
+      {t.projects.archiveOpens}
     </p>
   )
 }
 
 function Media({ project, sizes, tone }: { project: ArchiveProject; sizes: string; tone: 'soft' | 'brand' }) {
+  const { t, l } = useI18n()
   return (
     <div className={styles.tilt} data-tilt="">
       <div className={styles.media} data-mask="">
         <ItemMedia
           id={project.id}
           drawing={project.drawing}
-          image={project.image}
+          image={project.image && { ...project.image, alt: l(project.image.alt) }}
           tone={tone}
           sizes={sizes}
           className={styles.plate}
         />
-        {project.sample && <span className={`chip chip--sample ${styles.sampleTag}`}>Sample</span>}
+        {project.sample && <span className={`chip chip--sample ${styles.sampleTag}`}>{t.common.sample}</span>}
       </div>
     </div>
   )
 }
 
 function FeaturedProject({ project }: { project: ArchiveProject }) {
+  const { t, l } = useI18n()
   const discipline = DISCIPLINE_BY_ID[project.discipline]
   return (
     <article className={styles.featured} aria-labelledby={`${project.id}-title`}>
       <Media project={project} tone="brand" sizes="(min-width: 64rem) 60vw, 100vw" />
       <div className={styles.featuredBody}>
-        <p className={styles.kicker}>{discipline.name}</p>
+        <p className={styles.kicker}>{l(discipline.name)}</p>
         <ProjectTitle project={project} className={styles.featuredTitle} />
-        <p className={styles.summary}>{project.summary}</p>
+        <p className={styles.summary}>{l(project.summary)}</p>
         <dl className={styles.spec}>
           <div>
-            <dt>Discipline</dt>
-            <dd>{discipline.shortName}</dd>
+            <dt>{t.projects.discipline}</dt>
+            <dd>{l(discipline.shortName)}</dd>
           </div>
           <div>
-            <dt>Year</dt>
-            <dd>{project.year}</dd>
+            <dt>{t.projects.year}</dt>
+            <dd dir="ltr">{project.year}</dd>
           </div>
           <div>
-            <dt>Team</dt>
-            <dd>{project.team}</dd>
+            <dt>{t.projects.team}</dt>
+            <dd>{t.projects.teamOf(project.teamSize)}</dd>
           </div>
         </dl>
         <ArchiveStatus project={project} />
@@ -281,17 +287,18 @@ function FeaturedProject({ project }: { project: ArchiveProject }) {
 }
 
 function ProjectCard({ project }: { project: ArchiveProject }) {
+  const { t, l } = useI18n()
   const discipline = DISCIPLINE_BY_ID[project.discipline]
   return (
     <article className={styles.card} aria-labelledby={`${project.id}-title`}>
       <Media project={project} tone="soft" sizes="(min-width: 48rem) 40vw, 100vw" />
       <div className={styles.cardBody}>
         <p className={styles.cardMeta}>
-          {discipline.shortName} <span aria-hidden="true">·</span> {project.year}
+          {l(discipline.shortName)} <span aria-hidden="true">·</span> <span dir="ltr">{project.year}</span>
         </p>
         <ProjectTitle project={project} className={styles.cardTitle} />
-        <p className={styles.summary}>{project.summary}</p>
-        <p className={styles.team}>{project.team}</p>
+        <p className={styles.summary}>{l(project.summary)}</p>
+        <p className={styles.team}>{t.projects.teamOf(project.teamSize)}</p>
       </div>
     </article>
   )

@@ -33,13 +33,13 @@
 .sampleTag {
   position: absolute;
   top: var(--space-4);
-  right: var(--space-4);
+  inset-inline-end: var(--space-4);
   background: var(--surface);
 }
 
 .date {
   position: absolute;
-  left: var(--space-5);
+  inset-inline-start: var(--space-5);
   bottom: 0;
   display: flex;
   align-items: flex-end;
@@ -328,4 +328,9 @@
   .plate {
     transition: none;
   }
+}
+
+/* Rules draw from the start of the line on the Arabic site too. */
+:global(html[dir='rtl']) .rule {
+  transform-origin: right center;
 }

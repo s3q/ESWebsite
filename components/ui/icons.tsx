@@ -13,9 +13,10 @@ const base = {
   focusable: false,
 }
 
+/** Points toward the end of the line: mirrored on the Arabic site (see globals.css). */
 export function IconArrowRight(props: IconProps) {
   return (
-    <svg {...base} {...props}>
+    <svg {...base} data-icon="arrow" {...props}>
       <path d="M4.5 12h15M13.5 6l6 6-6 6" />
     </svg>
   )
