@@ -15,7 +15,7 @@ export function Disciplines() {
           <h2 id="disciplines-title" className="section-title" data-reveal="heading">
             Different disciplines. Shared ambition.
           </h2>
-          <p className="section-lead" data-reveal="rise">
+          <p className="section-lead" data-reveal="rise" style={{display:"none"}}>
             Seven engineering disciplines meet in one society: the same events, the same archive and the same
             network, whichever field you study.
           </p>

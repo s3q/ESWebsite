@@ -21,7 +21,6 @@ export function Leadership() {
             Meet the Society’s Leadership
           </h2>
           <p className={`section-lead ${styles.lead}`} data-reveal="rise">
-            The society’s senior leadership: one President and three Vice Presidents, with the committees beneath them.
           </p>
           {allVacant && (
             <p className={`preview-note ${styles.note}`} data-reveal="rise">

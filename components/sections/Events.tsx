@@ -17,7 +17,9 @@ export function Events() {
           </h2>
           <div className={styles.headAside} data-reveal="rise">
             <p className="section-lead">
+              <p style={{display: "none"}}>
               Workshops, talks and visits run by the society’s committees, with registration on the same page.
+            </p>
             </p>
             <p className="preview-note">
               <span className="status-dot" aria-hidden="true" />
