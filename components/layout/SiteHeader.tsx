@@ -3,10 +3,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { forwardRef, useCallback, useEffect, useRef, useState, type AnchorHTMLAttributes } from 'react'
+import { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState, type AnchorHTMLAttributes } from 'react'
 import { PAGE_LINKS, SECTION_LINKS, SITE, sectionHref, type SectionId } from '@/content/site'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { LanguageSwitch } from '@/components/i18n/LanguageSwitch'
+import { IconArrowRight } from '@/components/ui/icons'
 import { DESKTOP_QUERY } from '@/lib/motion'
 import styles from './SiteHeader.module.css'
 
@@ -78,6 +79,18 @@ export function SiteHeader() {
     setOpen(false)
     if (returnFocus) menuButtonRef.current?.focus()
   }, [])
+
+  // While the menu is open the page behind it stays put. Applied in a layout effect so the lock
+  // lifts in the same commit that closes the menu: a link's own scroll is never blocked.
+  useLayoutEffect(() => {
+    if (!open) return
+    const html = document.documentElement
+    const previous = html.style.overflow
+    html.style.overflow = 'hidden'
+    return () => {
+      html.style.overflow = previous
+    }
+  }, [open])
 
   // Menu keyboard + viewport handling.
   useEffect(() => {
@@ -195,6 +208,7 @@ export function SiteHeader() {
                     onClick={() => close(false)}
                   >
                     {t.nav.links[link.id]}
+                    <IconArrowRight className={styles.panelArrow} />
                   </NavLink>
                 </li>
               ))}
@@ -207,11 +221,19 @@ export function SiteHeader() {
                     onClick={() => close(false)}
                   >
                     {t.nav.links[link.id]}
+                    <IconArrowRight className={styles.panelArrow} />
                   </NavLink>
                 </li>
               ))}
             </ul>
           </nav>
+          {/* The full language control lives in the menu too, on every phone width. */}
+          <div className={styles.panelLanguage}>
+            <span className={styles.panelLabel} aria-hidden="true">
+              {t.nav.language}
+            </span>
+            <LanguageSwitch />
+          </div>
           <NavLink href={joinHref} className={`btn btn--primary ${styles.panelJoin}`} onClick={() => close(false)}>
             {t.nav.join}
           </NavLink>

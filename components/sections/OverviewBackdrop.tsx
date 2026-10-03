@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
 import { useRef } from 'react'
 import { DESKTOP_QUERY, FINE_POINTER_QUERY } from '@/lib/motion'
+import { OverviewLights } from './OverviewLights'
 import styles from './Overview.module.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -29,7 +30,8 @@ const LEAN = { photo: -8, glow: 18, mid: 12, near: 22 } as const
 
 /**
  * The overview's backdrop: the society's own photograph in a blue atmosphere, a blueprint
- * grid, a soft light and a few drawn engineering marks, each on its own depth plane.
+ * grid, a soft light, drifting points of light and a few drawn engineering marks, each on its
+ * own depth plane.
  * Decorative throughout (aria-hidden); the section's text never depends on it.
  */
 export function OverviewBackdrop({ src }: { src: string }) {
@@ -47,8 +49,8 @@ export function OverviewBackdrop({ src }: { src: string }) {
         (ctx) => {
           const { desktop, finePointer, motion } = ctx.conditions as Record<string, boolean>
           if (!motion) return
-          // Phones and tablets get the same depth at under half the travel.
-          const amp = desktop ? 1 : 0.4
+          // Phones and tablets get the same depth story with a little less travel.
+          const amp = desktop ? 1 : 0.65
           const tl = gsap.timeline({
             defaults: { ease: 'none' },
             scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
@@ -95,6 +97,9 @@ export function OverviewBackdrop({ src }: { src: string }) {
       <div className={styles.grid} data-depth="grid" />
       <div className={styles.glow} data-depth="glow" />
       <div className={styles.shade} />
+      {/* Points of light on their own depth planes (canvas), above the shade so they glow,
+          masked down where the text sits. */}
+      <OverviewLights />
 
       {/* Drawn marks from the engineering vocabulary: a datum ring, a dimension line, a block
           and the logo's leaf. Line only, pale, and never behind the text column. */}

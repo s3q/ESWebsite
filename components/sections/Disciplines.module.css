@@ -136,3 +136,9 @@
 :global(html[dir='rtl']) .rule {
   transform-origin: right center;
 }
+
+@media (hover: none) {
+  .row[data-inview] {
+    background: var(--surface);
+  }
+}

@@ -1,0 +1,302 @@
+/* An activity's previous events: a photograph per event, its title over the top of the image
+   and its date and attendance along the bottom, crossfading on a slow zoom. */
+.slideshow {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--radius-plate);
+  background: rgb(var(--atmo-rgb));
+  /* Horizontal swipes are ours; vertical drags stay with the page. */
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.frame:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.slides {
+  position: absolute;
+  inset: 0;
+}
+
+/* The incoming slide fades in on top of the outgoing one, which stays opaque underneath:
+   there is never a blank or half-dimmed frame. */
+.slide {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 1100ms var(--ease-in-out);
+}
+
+.slide[data-state='active'] {
+  z-index: 2;
+  opacity: 1;
+}
+
+.slide[data-state='leaving'] {
+  z-index: 1;
+  opacity: 1;
+  transition: none;
+}
+
+/* Over-scanned so the scroll parallax never shows an edge. */
+.media {
+  position: absolute;
+  inset: -5% 0;
+}
+
+.zoom {
+  position: absolute;
+  inset: 0;
+}
+
+.photo {
+  object-fit: cover;
+}
+
+/* A slow drift toward the subject while a slide is shown (and while it hands over). */
+@keyframes kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.slide[data-state] .zoom {
+  animation: kenburns calc(6000ms + 1400ms) linear forwards;
+  will-change: transform;
+}
+
+.slide[data-kb='0'] .zoom {
+  transform-origin: 30% 40%;
+}
+
+.slide[data-kb='1'] .zoom {
+  transform-origin: 70% 30%;
+}
+
+.slide[data-kb='2'] .zoom {
+  transform-origin: 50% 70%;
+}
+
+.slideshow[data-paused] .zoom,
+.slideshow[data-paused] .progressFill {
+  animation-play-state: paused;
+}
+
+/* ---- Caption: title on top, date and attendance along the bottom ---- */
+
+.caption {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
+  color: var(--on-dark);
+  background:
+    linear-gradient(to bottom, rgb(var(--atmo-rgb) / 0.78) 0%, rgb(var(--atmo-rgb) / 0.32) 26%, transparent 46%),
+    linear-gradient(to top, rgb(var(--atmo-rgb) / 0.84) 0%, rgb(var(--atmo-rgb) / 0.36) 24%, transparent 44%);
+  pointer-events: none;
+}
+
+.title {
+  max-width: 26ch;
+  color: var(--on-dark);
+  font-size: clamp(1.125rem, 1rem + 0.7vw, 1.625rem);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-shadow: 0 1px 16px rgb(var(--atmo-rgb) / 0.5);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.metaIcon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--accent-gold);
+}
+
+.demo {
+  margin-inline-start: auto;
+  padding: 3px var(--space-3);
+  border: 1px dashed rgb(247 248 242 / 0.5);
+  border-radius: var(--radius-chip);
+  color: var(--on-dark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* The caption of the incoming slide settles in just after its photograph. */
+@keyframes caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.slide[data-state='active'] .title,
+.slide[data-state='active'] .meta {
+  animation: caption-in 700ms var(--ease-out) both;
+}
+
+.slide[data-state='active'] .meta {
+  animation-delay: 120ms;
+}
+
+/* ---- Progress: the slideshow's clock ---- */
+
+.progress {
+  position: absolute;
+  inset-inline: var(--space-5);
+  bottom: var(--space-3);
+  z-index: 3;
+  height: 2px;
+  border-radius: 2px;
+  background: rgb(247 248 242 / 0.22);
+  overflow: hidden;
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  background: var(--on-dark);
+  transform-origin: left center;
+  animation-name: progress;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+:global(html[dir='rtl']) .progressFill {
+  transform-origin: right center;
+}
+
+/* ---- Controls ---- */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dots {
+  display: flex;
+}
+
+.dot {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.dot span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transition:
+    width 280ms var(--ease-out),
+    background-color 280ms var(--ease-out);
+}
+
+.dot:hover span {
+  background: var(--text-secondary);
+}
+
+.dot[aria-current] span {
+  width: 22px;
+  background: var(--brand-primary);
+}
+
+.counter {
+  margin-inline-start: var(--space-2);
+  color: var(--text-secondary);
+  font-family: var(--font-display-latin);
+  font-size: var(--text-label);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-inline-start: auto;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-primary);
+  transition:
+    border-color var(--dur-hover) var(--ease-out),
+    background-color var(--dur-hover) var(--ease-out);
+}
+
+.toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.toggle:hover {
+  border-color: var(--text-secondary);
+  background: var(--surface);
+}
+
+/* Reduced motion: still photographs, instant changes. */
+@media (prefers-reduced-motion: reduce) {
+  .slide[data-state] .zoom,
+  .slide[data-state='active'] .title,
+  .slide[data-state='active'] .meta {
+    animation: none;
+  }
+
+  .slide {
+    transition: none;
+  }
+}

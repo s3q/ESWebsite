@@ -49,3 +49,15 @@ export function eventTimeRange(startIso: string, endIso: string, intl: string) {
 export function formatCount(n: number, intl: string) {
   return new Intl.NumberFormat(intl, { maximumFractionDigits: 0 }).format(n)
 }
+
+const monthYearCache = new Map<string, Intl.DateTimeFormat>()
+
+/** 'February 2025' / 'فبراير 2025': how a past event is dated in the activity galleries. */
+export function formatMonthYear(isoDate: string, intl: string) {
+  let f = monthYearCache.get(intl)
+  if (!f) {
+    f = new Intl.DateTimeFormat(intl, { timeZone: TZ, month: 'long', year: 'numeric' })
+    monthYearCache.set(intl, f)
+  }
+  return f.format(new Date(`${isoDate}T12:00:00+04:00`))
+}

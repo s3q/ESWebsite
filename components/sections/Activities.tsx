@@ -2,14 +2,16 @@ import Link from 'next/link'
 import { ACTIVITIES } from '@/content/activities'
 import { IconArrowRight } from '@/components/ui/icons'
 import { getI18n } from '@/lib/i18n/server'
-import { ActivitiesShowcase } from './ActivitiesShowcase'
+import { ActivityGalleries } from './ActivityGalleries'
 import styles from './Activities.module.css'
 
-/** The society's recurring programmes. Dated events stay in the Events section. */
+/**
+ * The society's six activities, each an automatic slideshow of its previous events. Dated,
+ * upcoming events stay in the Events section.
+ */
 export async function Activities() {
   const { t } = await getI18n()
-  const hasPhotos = ACTIVITIES.some((a) => a.photos.main)
-  const hasFigures = ACTIVITIES.some((a) => a.stats.length > 0)
+  const hasDemo = ACTIVITIES.some((a) => a.events.some((e) => e.demo))
 
   return (
     <section id="activities" className={`section ${styles.section}`} aria-labelledby="activities-title">
@@ -20,19 +22,18 @@ export async function Activities() {
           </h2>
           <div className={styles.headAside} data-reveal="rise">
             <p className="section-lead">{t.activities.lead}</p>
-            {(!hasPhotos || !hasFigures) && (
+            {hasDemo && (
               <p className="preview-note">
                 <span className="status-dot" aria-hidden="true" />
                 <span>
-                  <strong>{hasPhotos ? t.activities.figuresStrong : t.activities.photosStrong}</strong>{' '}
-                  {hasPhotos ? t.activities.figuresBody : t.activities.photosBody}
+                  <strong>{t.activities.demoStrong}</strong> {t.activities.demoBody}
                 </span>
               </p>
             )}
           </div>
         </header>
 
-        <ActivitiesShowcase activities={ACTIVITIES} />
+        <ActivityGalleries galleries={ACTIVITIES} />
 
         <div className={styles.cta} data-reveal="rise">
           <Link href="/activities" className="btn btn--primary">

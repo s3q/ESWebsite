@@ -126,6 +126,13 @@
   color: var(--text-secondary);
 }
 
+/* Demonstration values are tagged right under the number they qualify. */
+.demoTag {
+  margin-top: calc(var(--space-2) * -1);
+  min-height: 24px;
+  font-size: 0.75rem;
+}
+
 .label {
   max-width: 22ch;
   color: var(--text-secondary);

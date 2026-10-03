@@ -1,6 +1,7 @@
 import { Hero } from '@/components/hero/Hero'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
+import { InViewMarker } from '@/components/motion/InViewMarker'
 import { ScrollReveals } from '@/components/motion/ScrollReveals'
 import { Activities } from '@/components/sections/Activities'
 import { Disciplines } from '@/components/sections/Disciplines'
@@ -21,14 +22,15 @@ export default function HomePage() {
         <StatsStrip stats={SOCIETY_STATS} />
         <Overview />
         <Events />
+        <Activities />
         <Projects />
         <Disciplines />
-        <Activities />
         <Leadership />
         <JoinInvitation />
       </main>
       <SiteFooter />
       <ScrollReveals />
+      <InViewMarker selector="[data-symbol-row], [data-activity]" />
     </>
   )
 }

@@ -86,15 +86,19 @@ export function ProjectsBrowser({ projects }: { projects: ArchiveProject[] }) {
         }
       })
 
-      mm.add(`${DESKTOP_QUERY} and (prefers-reduced-motion: no-preference)`, () => {
+      // Depth in the drawings as they pass: full travel on desktop, about half on phones.
+      mm.add({ desktop: DESKTOP_QUERY, motion: '(prefers-reduced-motion: no-preference)' }, (ctx) => {
+        const { desktop, motion } = ctx.conditions as Record<string, boolean>
+        if (!motion) return
+        const travel = desktop ? MOTION.parallax : MOTION.parallax * 0.55
         gsap.utils.toArray<HTMLElement>('[data-mask]', root).forEach((media) => {
           const art = media.querySelector('[data-parallax]')
           if (!art) return
           gsap.fromTo(
             art,
-            { y: -MOTION.parallax },
+            { y: -travel },
             {
-              y: MOTION.parallax,
+              y: travel,
               ease: 'none',
               scrollTrigger: { trigger: media, start: 'top bottom', end: 'bottom top', scrub: true },
             },

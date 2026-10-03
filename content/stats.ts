@@ -5,8 +5,9 @@ import type { Localized } from '@/lib/i18n'
  * About page) in the same style. NEVER add a figure without a source.
  *
  * - A `count` with a number counts up once as the strip enters the viewport.
- * - A `count` whose value is `null` has no verified source yet. It renders as a clearly
- *   labelled placeholder ("Verified figure to come"), never as a guess or a zero.
+ * - A `count` whose value is `null` renders as a labelled placeholder ("Verified figure to come").
+ * - `demo: true` marks a demonstration value: it animates, but is tagged "Demo figure" and the
+ *   strip states that its figures are not verified.
  * - A `year-range` is shown as written and never animates.
  * - `note` renders as a visible footnote; use it whenever a figure needs qualifying.
  */
@@ -28,30 +29,35 @@ export interface SocietyStat {
   source: string | null
   /** A qualification that must stay visible next to the figure. */
   note?: Localized
+  /** A demonstration value, not a verified figure: labelled as such wherever it is shown. */
+  demo?: boolean
 }
 
 /**
- * The homepage strip. None of these four has a verified source in the project yet:
- * - members: the society's membership register (registration is a Phase 1 platform feature);
- * - visitors: needs real site analytics (e.g. the host's analytics). Do not use a hand-made
- *   counter: it would count reloads and bots, not visitors;
- * - projects / events: the society's own records. The project and event entries on this site
- *   are labelled samples and must not be counted.
- * Set `value` (and `reportingPeriod`, `source`) when a figure is confirmed.
+ * The homepage strip. None of these four has a verified source in the project yet, so each
+ * carries a DEMONSTRATION value (`demo: true`): it counts up like a real figure but is labelled
+ * "Demo figure" on the page, with a note that the figures are not verified.
+ *
+ * To publish a real figure, set `value`, `reportingPeriod` and `source`, and remove `demo`.
+ * - members: the society's membership register;
+ * - visitors: real site analytics (e.g. the host's analytics), never a hand-made counter;
+ * - projects / events: the society's own records (the entries on this site are samples).
  */
 export const SOCIETY_STATS: SocietyStat[] = [
   {
     id: 'members',
     icon: 'members',
-    stat: { kind: 'count', value: null },
-    label: { en: 'Society members', ar: 'أعضاء الجمعية' },
+    stat: { kind: 'count', value: 1250 },
+    demo: true,
+    label: { en: 'Society members', ar: 'أعضاء الجماعة' },
     reportingPeriod: null,
     source: null,
   },
   {
     id: 'visitors',
     icon: 'visitors',
-    stat: { kind: 'count', value: null },
+    stat: { kind: 'count', value: 18400 },
+    demo: true,
     label: { en: 'Website visitors', ar: 'زوّار الموقع' },
     reportingPeriod: null,
     source: null,
@@ -59,16 +65,18 @@ export const SOCIETY_STATS: SocietyStat[] = [
   {
     id: 'projects',
     icon: 'projects',
-    stat: { kind: 'count', value: null },
-    label: { en: 'Society projects', ar: 'مشاريع الجمعية' },
+    stat: { kind: 'count', value: 86 },
+    demo: true,
+    label: { en: 'Society projects', ar: 'مشاريع الجماعة' },
     reportingPeriod: null,
     source: null,
   },
   {
     id: 'events',
     icon: 'events',
-    stat: { kind: 'count', value: null },
-    label: { en: 'Society events', ar: 'فعاليات الجمعية' },
+    stat: { kind: 'count', value: 140 },
+    demo: true,
+    label: { en: 'Society events', ar: 'فعاليات الجماعة' },
     reportingPeriod: null,
     source: null,
   },
@@ -76,7 +84,7 @@ export const SOCIETY_STATS: SocietyStat[] = [
 
 const HISTORICAL_NOTE: Localized = {
   en: 'As recorded in the society’s own overview. The date these counts were reported is not stated, so they may not be current totals.',
-  ar: 'وفق ما ورد في نبذة الجمعية عن نفسها. لم يُذكر تاريخ رصد هذه الأعداد، لذا قد لا تمثّل المجموع الحالي.',
+  ar: 'وفق ما ورد في نبذة الجماعة عن نفسها. لم يُذكر تاريخ رصد هذه الأعداد، لذا قد لا تمثّل المجموع الحالي.',
 }
 
 /** Facts from the society's own overview (Draft 4), shown on the About page. */
@@ -84,7 +92,7 @@ export const SOCIETY_FACTS: SocietyStat[] = [
   {
     id: 'established',
     stat: { kind: 'year-range', from: 2000, to: 2001 },
-    label: { en: 'Academic year the society was established', ar: 'العام الأكاديمي لتأسيس الجمعية' },
+    label: { en: 'Academic year the society was established', ar: 'العام الأكاديمي لتأسيس الجماعة' },
     reportingPeriod: null,
     source: 'Society overview supplied for Draft 4',
   },

@@ -14,7 +14,6 @@ const EmblemScene = dynamic(() => import('./emblem/EmblemScene'), { ssr: false }
 
 const STILL_SIZE = 1280
 const SIZES = '(min-width: 64rem) 55vw, 100vw'
-const EMPTY = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 
 const subscribeNever = () => () => {}
 
@@ -43,20 +42,23 @@ function whenIdle(cb: () => void): IdleHandle {
 }
 
 /**
- * Rendered stills of the real scene. Before the 3D code arrives (and without JavaScript),
- * desktop shows the separated opening pose and reduced-motion shows the assembled emblem, so
- * the hero is complete at first paint. Mobile loads no still: its artwork sits below the copy.
+ * Rendered stills of the real scene, so the emblem is complete at first paint and never
+ * depends on WebGL arriving: desktop shows the separated opening pose, phones and tablets the
+ * compact scene's opening pose, and reduced motion the assembled emblem. Each live canvas
+ * crossfades over the still that matches it. (Phones used to load no still, so the emblem was
+ * missing whenever the 3D code was slow, failed, or the page never hydrated.)
  */
 function StillPicture({ className }: { className: string }) {
   // Only the matching <source> is fetched, so eager loading costs mobile nothing.
   const common = { alt: '', width: STILL_SIZE, height: STILL_SIZE, sizes: SIZES, loading: 'eager' as const }
   const assembled = getImageProps({ ...common, src: '/hero/emblem-assembled.webp', fetchPriority: 'high' }).props
   const opening = getImageProps({ ...common, src: '/hero/emblem-opening.webp' }).props
+  const stacked = getImageProps({ ...common, src: '/hero/emblem-stacked.webp' }).props
   return (
     <picture className={className}>
       <source media="(prefers-reduced-motion: reduce)" srcSet={assembled.srcSet} sizes={SIZES} />
       <source media="(min-width: 64rem)" srcSet={opening.srcSet} sizes={SIZES} />
-      <source media="(max-width: 63.99rem)" srcSet={EMPTY} />
+      <source media="(max-width: 63.99rem)" srcSet={stacked.srcSet} sizes={SIZES} />
       {/* eslint-disable-next-line jsx-a11y/alt-text -- decorative; alt="" comes from props */}
       <img {...assembled} />
     </picture>

@@ -144,3 +144,46 @@
     transform: translateX(3px);
   }
 }
+
+/* Touch screens: the same detail moves while the row is centred in view (InViewMarker). */
+@media (hover: none) {
+  :global([data-symbol-row][data-inview]) .tile {
+    fill: var(--surface);
+    stroke: var(--brand-primary);
+  }
+
+  :global([data-symbol-row][data-inview]) .detail {
+    stroke: var(--brand-primary);
+  }
+
+  :global([data-symbol-row][data-inview]) .turn {
+    transform: rotate(45deg);
+  }
+
+  :global([data-symbol-row][data-inview]) .pad {
+    fill: var(--brand-primary);
+    transform: scale(1.3);
+  }
+
+  :global([data-symbol-row][data-inview]) .cross {
+    opacity: 1;
+    transform: translateX(14.8px);
+  }
+
+  :global([data-symbol-row][data-inview]) .flame {
+    transform: scaleY(1.3);
+  }
+
+  :global([data-symbol-row][data-inview]) .bubble {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+
+  :global([data-symbol-row][data-inview]) .swing {
+    transform: rotate(-24deg);
+  }
+
+  :global([data-symbol-row][data-inview]) .slide {
+    transform: translateX(3px);
+  }
+}

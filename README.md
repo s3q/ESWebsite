@@ -21,14 +21,24 @@ npm run lint
 npm run typecheck
 ```
 
+**Testing on a phone:** run `npm run dev` and open the **Network** URL it prints (for example
+`http://192.168.8.158:3000`) on a phone on the same Wi-Fi. Next.js blocks dev-only assets for
+origins it doesn't know, so without `allowedDevOrigins` in `next.config.ts` the phone received
+the HTML but the page never hydrated: no menu, no animations, no 3D. Private network ranges are
+now allowed in development; production builds were never affected.
+
 ## Routes
 
-- `/` — hero, society figures, overview, `#events`, `#projects`, `#disciplines`, `#activities`,
+- `/` — hero, society figures, overview, `#events`, `#activities`, `#projects`, `#disciplines`,
   `#leadership`, `#join` and the footer.
 - `/about` — overview, the society's facts, and the full structure (`#structure`).
 - `/activities` — the archive of previous activities, filterable by programme and year.
 
 ## English | العربية
+
+The society's Arabic name is **الجماعة الهندسية** (English: Engineering Society). The college's
+seven engineering societies, which the society works with, are still written الجمعيات in
+Arabic; change those too if they are also جماعات.
 
 - **Default:** English. The navbar switch (a single ع / EN toggle on smaller screens) saves the
   choice in a cookie (`es-locale`, one year) and in localStorage.
@@ -59,10 +69,10 @@ npm run typecheck
 
 | Area | State | Where to change it |
 | --- | --- | --- |
-| Society figures (home) | **Members, Visitors, Projects, Events: no verified source yet.** Each shows a labelled placeholder, never a guessed number. Set `value` (with `reportingPeriod` and `source`) and it counts up. Visitors need real analytics, not a hand-made counter. | `content/stats.ts` → `SOCIETY_STATS` |
+| Society figures (home) | **Members, Visitors, Projects, Events: demonstration values** (1,250 · 18,400 · 86 · 140), each tagged "Demo figure" with a note that they are not verified. They count up on arrival. Replace `value`, add `reportingPeriod` and `source`, and remove `demo: true`. Visitors need real analytics, not a hand-made counter. | `content/stats.ts` → `SOCIETY_STATS` |
 | Society facts (About) | From the society's own overview: established 2000–01, 7 societies, 6 exhibitions and 6 gatherings (the last two qualified: reporting date unknown). | `content/stats.ts` → `SOCIETY_FACTS` |
 | Overview | The society's own photograph (`public/images/overview.jpg`) under a blue atmosphere with layered parallax. | `content/overview.ts` |
-| Activities | The society's own photograph for each programme. Descriptions are **drafts** to confirm. أستوديو الخريجين has none yet. No figures or edition pages yet. | `content/activities.ts` |
+| Activities | The six official activities (التجمع الهندسي، البرنامج الهندسي، ورش الخريجين، أستوديو الخريجين، الأمسيات، المسابقات), each an automatic slideshow of **demonstration events**: titles, dates and attendance are samples tagged "Demo". Each gallery opens on its own society photograph; the society's other photographs repeat after it. أستوديو الخريجين's description is still to come. Add real events to an activity's `events` without `demo`. | `content/activities.ts` |
 | Archive | Empty until editions are documented. | `content/activities.ts` → `ACTIVITY_EDITIONS` |
 | Leadership & structure | One President and three Vice Presidents, **all vacant**; no term, chairs or deputies. فريق التصوير is listed once (the brief listed it twice). | `content/structure.ts` |
 | Events | **Sample listings**, labelled "Sample". Registration is a preview dialog; nothing is submitted. | `content/events.ts` |
@@ -80,8 +90,13 @@ Social URLs are validated: https, on the platform's own domain, pointing to a pr
 - **Desktop:** a sticky, scrubbed assembly that is fully reversible, with pointer tilt capped at
   ±4°.
 - **Mobile:** a compact, lighter scene.
-- **Fallbacks:** stills in `public/hero/` cover first paint, reduced motion, Save-Data and
-  no-WebGL. Regenerate them with `scripts/capture-still.mjs` after changing the geometry.
+- **Stills:** stills in `public/hero/` cover first paint on every screen size, plus reduced
+  motion, Save-Data and no-WebGL:
+  - `emblem-opening.webp`: desktop.
+  - `emblem-stacked.webp`: phones and tablets. Before this still existed, the phone hero was
+    empty until WebGL arrived.
+  - `emblem-assembled.webp`: the fallback.
+- **Regenerating:** run `scripts/capture-still.mjs 0|1|2` after changing the geometry.
 
 ## Motion
 
@@ -90,11 +105,25 @@ Social URLs are validated: https, on the platform's own domain, pointing to a pr
   (`components/motion/ScrollReveals.tsx`).
 - **Recipes by section:**
   - **Society figures:** icons draw in and real figures count up once.
-  - **Overview:** the photograph, blueprint grid, light and drawn marks sit on separate depth
-    planes that move at different speeds as you scroll. On fine pointers they lean slightly
-    toward the cursor. Phones get under half the travel.
-  - **Activities:** photographs unmask from their outer edge, with gentle parallax, a tilt of at
-    most 2° and a 1.03 zoom on hover or focus.
+  - **Overview:**
+    - The photograph, blueprint grid, light and drawn marks sit on separate depth planes that
+      move at different speeds as you scroll.
+    - Points of light drift on top (`OverviewLights.tsx`, one 2D canvas). Each light has a depth:
+      far lights are small and slow, near lights larger, softer and quicker. They twinkle, and
+      they move at depth-dependent speeds as you scroll.
+    - On fine pointers the layers lean slightly toward the cursor. Phones get the same layers
+      with slightly less travel.
+    - The canvas only runs while the section is on screen.
+  - **Activities:**
+    - Each slideshow crossfades with no blank frame, on a slow zoom. A progress line is its
+      clock, so pausing freezes line, zoom and timer together.
+    - The six start staggered and pause while hovered, touched, keyboard-focused or off
+      screen.
+    - Swipe on touch screens; arrow keys and dots on all.
+    - Frames unmask on arrival and carry a light parallax (phones included) and a tilt of at
+      most 2° on desktop.
+  - **Touch screens:** effects that waited for hover (the discipline symbols' moving detail, the
+    activity accent lines) play when the element is centred in view (`InViewMarker.tsx`).
   - **Leadership:** the President appears first, then the connectors draw, then the Vice
     Presidents.
 - **Reduced motion:** everything is respected, and content is visible without JavaScript.
@@ -107,10 +136,10 @@ components/
   hero/              Hero, HeroArt (loader, stills, fallbacks), emblem/ (R3F scene)
   i18n/              I18nProvider (client language context), LanguageSwitch
   layout/            SiteHeader (glass navbar), SiteFooter (incl. Follow the Society)
-  sections/          StatsStrip, Overview (+ OverviewBackdrop), Events, Projects, Disciplines,
-                     Activities (+ ActivitiesShowcase), Leadership (+ LeadershipTree),
-                     Structure, Archive*, JoinInvitation, PageIntro
-  motion/            ScrollReveals
+  sections/          StatsStrip, Overview (+ OverviewBackdrop, OverviewLights), Events, Projects,
+                     Disciplines, Activities (+ ActivityGalleries, Slideshow), Leadership
+                     (+ LeadershipTree), Structure, Archive*, JoinInvitation, PageIntro
+  motion/            ScrollReveals, InViewMarker
   ui/                drawings, Plate, Portrait, PhotoPlaceholder, StatIcon, SocialIcon, icons…
 content/             data and bilingual content
 lib/i18n/            config, dictionaries (en, ar), server helper, plurals

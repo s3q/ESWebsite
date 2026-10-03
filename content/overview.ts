@@ -17,7 +17,7 @@ export const OVERVIEW: {
   paragraphs: [
     {
       en: 'The Engineering Society is a student-run organisation at Sultan Qaboos University’s College of Engineering, working with the College’s support and supervision. Established in the 2000–2001 academic year, it is the umbrella body that works closely with the college’s seven engineering societies.',
-      ar: 'الجمعية الهندسية منظمة طلابية يديرها الطلاب في كلية الهندسة بجامعة السلطان قابوس، وتعمل بدعم الكلية وإشرافها. تأسست في العام الأكاديمي 2000/2001، وهي المظلة التي تعمل عن قرب مع الجمعيات الهندسية السبع في الكلية.',
+      ar: 'الجماعة الهندسية منظمة طلابية يديرها الطلاب في كلية الهندسة بجامعة السلطان قابوس، وتعمل بدعم الكلية وإشرافها. تأسست في العام الأكاديمي 2000/2001، وهي المظلة التي تعمل عن قرب مع الجمعيات الهندسية السبع في الكلية.',
     },
     {
       en: 'Through seminars, conferences, exhibitions and workshops, it gives students room to learn, build 21st-century skills and share what they know, growing academically, socially and professionally. Its wider aim is to promote research, industrial collaboration and innovation in Oman, and to prepare people to contribute to their communities and the world.',

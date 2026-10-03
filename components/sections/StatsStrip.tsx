@@ -66,6 +66,7 @@ export function StatsStrip({ stats, kind = 'stats' }: { stats: SocietyStat[]; ki
   const notes = [...new Map(stats.filter((s) => s.note).map((s) => [s.note!.en, s.note!])).values()]
   const noteIndex = (note?: SocietyStat['note']) => (note ? notes.findIndex((n) => n.en === note.en) : -1)
   const hasPending = stats.some((s) => s.stat.kind === 'count' && s.stat.value === null)
+  const hasDemo = stats.some((s) => s.demo)
   const hasRange = stats.some((s) => s.stat.kind === 'year-range')
 
   useGSAP(
@@ -161,12 +162,13 @@ export function StatsStrip({ stats, kind = 'stats' }: { stats: SocietyStat[]; ki
                   <span className={styles.figure} data-part="figure" data-kind={s.stat.kind}>
                     <StatFigure stat={s.stat} />
                   </span>
+                  {s.demo && <span className={`chip chip--sample ${styles.demoTag}`}>{t.stats.demoTag}</span>}
                 </dd>
               </div>
             )
           })}
         </dl>
-        {(notes.length > 0 || hasPending) && (
+        {(notes.length > 0 || hasPending || hasDemo) && (
           <div className={styles.notes}>
             {notes.map((note, i) => (
               <p key={note.en} className={styles.note}>
@@ -174,6 +176,12 @@ export function StatsStrip({ stats, kind = 'stats' }: { stats: SocietyStat[]; ki
                 <span className="visually-hidden">{t.stats.note(i + 1)} </span> {l(note)}
               </p>
             ))}
+            {hasDemo && (
+              <p className={styles.note}>
+                <span className="status-dot" aria-hidden="true" />
+                {t.stats.demoNote}
+              </p>
+            )}
             {hasPending && (
               <p className={styles.note}>
                 <span className="status-dot" aria-hidden="true" />

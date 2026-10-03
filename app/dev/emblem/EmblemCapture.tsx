@@ -17,7 +17,7 @@ export function EmblemCapture({ pose }: { pose: number }) {
   return (
     <div id="capture" style={{ width: 640, height: 640 }}>
       <EmblemScene
-        quality="high"
+        quality={pose === 2 ? 'low' : 'high'}
         pointer={false}
         activeRef={activeRef}
         sectionEl={null}

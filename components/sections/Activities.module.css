@@ -1,4 +1,5 @@
-/* An image-led gallery band: white, like Projects, but with its own wide/pair rhythm. */
+/* An image-led gallery band: white, like Projects, with its own wide/pair rhythm. Each of
+   the six activities is a slideshow of its previous events. */
 .section {
   background: var(--surface);
   border-block: 1px solid var(--border);
@@ -23,7 +24,7 @@
 
 .activity {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-5);
   min-width: 0;
 }
 
@@ -32,38 +33,24 @@
   min-width: 0;
 }
 
+/* The unmasking and tilting wrapper around the slideshow (frame and controls). */
 .mask {
   position: relative;
-  overflow: hidden;
-  border-radius: var(--radius-plate);
-  background: var(--surface-soft);
+  min-width: 0;
 }
 
-/* Over-scanned so the parallax never reveals an edge or crops a subject's head. */
-.parallax {
-  position: absolute;
-  inset: -4% 0;
-}
-
-.zoom {
-  position: absolute;
-  inset: 0;
-  transition: transform 420ms var(--ease-out);
-}
-
-.photo {
-  object-fit: cover;
-}
-
+/* Phones and tablets: the activity's name leads, its slideshow follows. */
 .body {
+  order: -1;
   display: grid;
-  align-content: center;
+  align-content: start;
   justify-items: start;
   gap: var(--space-3);
   min-width: 0;
 }
 
-/* A short cobalt line that extends when the activity is hovered or focused. */
+/* A short cobalt line that extends while the activity is hovered, focused or (on touch
+   screens) centred in view. */
 .accent {
   width: 88px;
   height: 2px;
@@ -74,80 +61,43 @@
   transition: transform 360ms var(--ease-out);
 }
 
-.title {
-  width: 100%;
-  font-family: var(--font-arabic);
+.categoryTitle {
   font-size: clamp(1.75rem, 1.35rem + 1.5vw, 2.75rem);
-  font-weight: 600;
-  line-height: 1.35;
-  text-align: left;
-  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-heading);
 }
 
-.gloss {
+.altName {
   margin-top: calc(var(--space-2) * -1);
-  color: var(--brand-primary);
-  font-size: var(--text-small);
+  width: 100%;
+  font-family: var(--font-arabic);
+  font-size: 1.25rem;
   font-weight: 600;
+  line-height: 1.45;
+  text-align: left;
+  color: var(--brand-primary);
 }
 
 .description {
-  max-width: 46ch;
+  max-width: 40ch;
   color: var(--text-secondary);
   font-size: var(--text-lead);
 }
 
-.stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4) var(--space-7);
-  margin-top: var(--space-2);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--border);
+.activity:focus-within .accent {
+  transform: scaleX(1);
 }
 
-.stats dd {
-  order: -1;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
+@media (hover: hover) and (pointer: fine) {
+  .activity:hover .accent {
+    transform: scaleX(1);
+  }
 }
 
-.stats div {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.stats dt {
-  color: var(--text-secondary);
-  font-size: var(--text-label);
-  font-weight: 500;
-}
-
-.statPeriod {
-  display: block;
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-.link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 44px;
-  color: var(--brand-primary);
-  font-weight: 600;
-}
-
-.linkArrow {
-  width: 18px;
-  height: 18px;
-  transition: transform var(--dur-hover) var(--ease-out);
+@media (hover: none) {
+  .activity[data-inview] .accent {
+    transform: scaleX(1);
+  }
 }
 
 .cta {
@@ -157,35 +107,8 @@
   border-top: 1px solid var(--border);
 }
 
-/* Hover and keyboard focus share the same response: image scale, accent, arrow. */
-.activity:focus-within .zoom {
-  transform: scale(1.03);
-}
-
-.activity:focus-within .accent {
-  transform: scaleX(1);
-}
-
-.link:focus-visible .linkArrow {
-  transform: translateX(3px);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .activity:hover .zoom {
-    transform: scale(1.03);
-  }
-
-  .activity:hover .accent {
-    transform: scaleX(1);
-  }
-
-  .activity:hover .linkArrow {
-    transform: translateX(3px);
-  }
-}
-
-/* Pairs share rows through subgrid, so both photographs start on the same line whatever
-   the length of each description. */
+/* Pairs share rows through subgrid, so both slideshows start on the same line whatever the
+   length of each description. */
 @media (min-width: 48rem) {
   .pair {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -198,11 +121,6 @@
     grid-row: span 2;
     grid-template-rows: subgrid;
   }
-
-  /* Paired text starts on one line too, rather than centring in the shared row. */
-  .pair .body {
-    align-content: start;
-  }
 }
 
 @media (min-width: 64rem) {
@@ -213,6 +131,12 @@
     align-items: center;
   }
 
+  .activity[data-layout='wide'] .body,
+  .activity[data-layout='wide-reverse'] .body {
+    order: 0;
+    align-content: center;
+  }
+
   .activity[data-layout='wide-reverse'] {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   }
@@ -220,27 +144,15 @@
   .activity[data-layout='wide-reverse'] .media {
     order: 2;
   }
-
-  /* Pairs are title-led: the name comes first, the photograph follows. */
-  .activity[data-layout='pair'] .body {
-    order: -1;
-    align-content: start;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .zoom,
-  .accent,
-  .linkArrow {
+  .accent {
     transition: none;
   }
 }
 
-/* On the Arabic site the names align with the page's start edge, and the accent grows from it. */
-:global(html[dir='rtl']) .title {
-  text-align: right;
-}
-
+/* On the Arabic site lines grow from the page's start edge. */
 :global(html[dir='rtl']) .accent {
   transform-origin: right center;
 }

@@ -84,3 +84,19 @@ export function IconCamera(props: IconProps) {
     </svg>
   )
 }
+
+export function IconPause(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M9 6.5v11M15 6.5v11" />
+    </svg>
+  )
+}
+
+export function IconPlay(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M8.5 6.2v11.6a.6.6 0 00.9.5l9-5.8a.6.6 0 000-1l-9-5.8a.6.6 0 00-.9.5z" />
+    </svg>
+  )
+}

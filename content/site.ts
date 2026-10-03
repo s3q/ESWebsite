@@ -7,7 +7,7 @@ import type { Localized } from '@/lib/i18n'
  */
 
 /** Homepage sections that appear in the navbar, in page order. Labels: `t.nav.links[id]`. */
-export const SECTION_LINKS = [{ id: 'events' }, { id: 'projects' }, { id: 'disciplines' }, { id: 'activities' }] as const
+export const SECTION_LINKS = [{ id: 'events' }, { id: 'activities' }, { id: 'projects' }, { id: 'disciplines' }] as const
 
 export type SectionId = (typeof SECTION_LINKS)[number]['id']
 

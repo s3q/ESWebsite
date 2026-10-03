@@ -53,14 +53,17 @@ export interface EmblemSceneProps {
   captionEl: HTMLElement | null
   onReady: () => void
   onError: () => void
-  /** Capture mode renders one fixed pose (0 = separated, 1 = assembled) for the still image. */
+  /**
+   * Capture mode renders one fixed pose for a still image: 0 = desktop opening (separated),
+   * 1 = assembled, 2 = the phone/tablet opening pose (the stacked layout's start).
+   */
   capturePose?: number
 }
 
 export default function EmblemScene(props: EmblemSceneProps) {
   const { quality, capturePose, onError } = props
   const capture = capturePose !== undefined
-  const cam = capture && capturePose >= 1 ? CAMERA.end : CAMERA.start
+  const cam = !capture ? CAMERA.start : capturePose === 2 ? CAMERA.stacked : capturePose >= 1 ? CAMERA.end : CAMERA.start
 
   return (
     <Canvas
@@ -251,8 +254,20 @@ function Emblem({
         Object.assign(cam, { x: CAMERA.end[0], y: CAMERA.end[1], z: CAMERA.end[2] })
       }
 
+      const poseStacked = () => {
+        modules.forEach((m, i) => {
+          m.position.set(...seat(i, STACKED_OFFSET))
+          m.rotation.set(0, 0, 0)
+        })
+        gearMesh.rotation.z = GEAR_START_SPIN
+        sculpt.rotation.set(0, 0, 0)
+        sculpt.scale.setScalar(1)
+        Object.assign(cam, { x: CAMERA.stacked[0], y: CAMERA.stacked[1], z: CAMERA.stacked[2] })
+      }
+
       if (capture) {
-        if ((capturePose ?? 0) >= 1) poseAssembled()
+        if (capturePose === 2) poseStacked()
+        else if ((capturePose ?? 0) >= 1) poseAssembled()
         else poseSeparated()
         applyCamera()
         invalidate()
@@ -322,14 +337,7 @@ function Emblem({
       // Stacked: a shorter version tied to the artwork itself, with no pinning or camera move.
       mm.add(STACKED_QUERY, () => {
         if (!artEl) return
-        modules.forEach((m, i) => {
-          m.position.set(...seat(i, STACKED_OFFSET))
-          m.rotation.set(0, 0, 0)
-        })
-        gearMesh.rotation.z = GEAR_START_SPIN
-        sculpt.rotation.set(0, 0, 0)
-        sculpt.scale.setScalar(1)
-        Object.assign(cam, { x: CAMERA.stacked[0], y: CAMERA.stacked[1], z: CAMERA.stacked[2] })
+        poseStacked()
         applyCamera()
 
         const tl = gsap.timeline({

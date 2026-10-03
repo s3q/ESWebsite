@@ -16,6 +16,7 @@ export default async function EmblemCapturePage({
 }) {
   if (process.env.NODE_ENV === 'production') notFound()
   const { pose = '0' } = await searchParams
-  const value = Math.min(1, Math.max(0, Number(pose) || 0))
+  // 0 = desktop opening, 1 = assembled, 2 = phone/tablet opening
+  const value = pose === '2' ? 2 : Math.min(1, Math.max(0, Number(pose) || 0))
   return <EmblemCapture pose={value} />
 }
