@@ -4,7 +4,7 @@ import { mapRegistrationResponse, registrationPayload, type RegistrationInput, t
 /*
  * The browser-safe registration call. It goes from the visitor's browser straight to Core
  *
- *   browser at engsoc.org  →  POST api.engsoc.org/v1/events/{eventId}/registrations
+ *   browser at essqu.com  →  POST api.essqu.com/v1/events/{eventId}/registrations
  *
  * so Core sees the visitor's own address for rate limiting, and no landing server sits in
  * between. It carries no secret of any kind: no API key, no cookie (`credentials: 'omit'`), no

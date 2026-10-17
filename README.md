@@ -264,7 +264,7 @@ integration/         the Core migration guidelines this integration follows
 
 ## Core API
 
-`engsoc.org` is this site; `api.engsoc.org` (planned) is the Core Platform API; `admin.engsoc.org`
+`essqu.com` is this site; `api.essqu.com` (planned) is the Core Platform API; `admin.essqu.com`
 (planned) is Core's admin. Core owns events and registrations; this site presents them.
 
 - One module, `lib/core-api`, reads `GET /v1/events` and `GET /v1/events/{id}` on the server

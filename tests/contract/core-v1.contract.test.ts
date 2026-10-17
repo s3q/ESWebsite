@@ -53,7 +53,7 @@ describe.skipIf(!enabled)('Core API v1 contract (staging, read-only)', () => {
   it.todo('BLOCKED (Core contract): POST /v1/events/{id}/registrations request fields and success body')
   it.todo('BLOCKED (Core contract): registration error vocabulary (already registered, full, closed, validation)')
   it.todo('BLOCKED (Core contract): 429 semantics and Retry-After exposure via Access-Control-Expose-Headers')
-  it.todo('BLOCKED (Core contract): CORS preflight allows https://engsoc.org and https://www.engsoc.org only')
+  it.todo('BLOCKED (Core contract): CORS preflight allows https://essqu.com and https://www.essqu.com only')
   it.todo('BLOCKED (Core contract): pagination, if Core paginates GET /v1/events')
 })
 

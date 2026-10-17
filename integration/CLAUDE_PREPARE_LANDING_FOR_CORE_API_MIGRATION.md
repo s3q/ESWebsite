@@ -5,13 +5,13 @@ You are the senior frontend/platform integration engineer responsible for prepar
 ## Target architecture
 
 ```text
-engsoc.org
+essqu.com
   → Landing Vercel project
 
-api.engsoc.org
+api.essqu.com
   → Core Vercel project API
 
-admin.engsoc.org
+admin.essqu.com
   → Core Vercel project administration
 ```
 
@@ -397,9 +397,9 @@ Use fixtures for UI-state development.
 Prepare for:
 
 ```text
-browser at engsoc.org
+browser at essqu.com
   ↓
-POST api.engsoc.org/v1/events/{id}/registrations
+POST api.essqu.com/v1/events/{id}/registrations
 ```
 
 This preserves the direct public request path for Core rate limiting.
@@ -437,8 +437,8 @@ Never optimistically claim success.
 Document production origins Core must allow:
 
 ```text
-https://engsoc.org
-https://www.engsoc.org
+https://essqu.com
+https://www.essqu.com
 ```
 
 Document Preview/dev needs separately.
@@ -571,9 +571,9 @@ If OpenAPI is not yet available, mark live contract tests as blocked rather than
 Document:
 
 ```text
-engsoc.org = landing
-api.engsoc.org = Core API
-admin.engsoc.org = Core admin
+essqu.com = landing
+api.essqu.com = Core API
+admin.essqu.com = Core admin
 ```
 
 Document:
@@ -679,7 +679,7 @@ Verify:
 
 Do NOT:
 - change production DNS
-- claim `api.engsoc.org` already exists
+- claim `api.essqu.com` already exists
 - create production Core API keys
 - modify Core
 - alter Supabase

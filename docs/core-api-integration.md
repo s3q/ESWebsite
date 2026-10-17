@@ -7,9 +7,9 @@ below is marked as an assumption or a handoff item.
 ## Who owns what
 
 ```text
-engsoc.org          landing (this repository): public pages, design, EN/AR, event presentation
-api.engsoc.org      Core API (planned, not live): events, registrations, availability, rules
-admin.engsoc.org    Core admin (planned): where committees create and manage events
+essqu.com          landing (this repository): public pages, design, EN/AR, event presentation
+api.essqu.com      Core API (planned, not live): events, registrations, availability, rules
+admin.essqu.com    Core admin (planned): where committees create and manage events
 ```
 
 | Concern | Owner |
@@ -111,7 +111,7 @@ internal status, approval state, audit fields, images, end times, schedules, dis
 Registration POSTs come from the visitor's browser, so Core must allow, for
 `/v1/events/{id}/registrations` only:
 
-- **Production origins:** `https://engsoc.org`, `https://www.engsoc.org`. Never `*`.
+- **Production origins:** `https://essqu.com`, `https://www.essqu.com`. Never `*`.
 - **Preview/development:** decide separately. Preview deployments should talk to **staging**
   Core, which may allow the Vercel preview origin(s) of this project and `http://localhost:3000`.
   Production Core should not allow preview origins.
@@ -165,7 +165,7 @@ npm run test:contract    # staging Core, read-only; skipped unless configured (b
 
 ```text
 [ ] staging API origin
-[ ] production API origin (api.engsoc.org is planned, not live)
+[ ] production API origin (api.essqu.com is planned, not live)
 [ ] OpenAPI v1 contract
 [ ] event-list contract (envelope, ordering, which events are public)
 [ ] event-detail contract (404 vs 410 for removed events)
@@ -175,7 +175,7 @@ npm run test:contract    # staging Core, read-only; skipped unless configured (b
 [ ] registration result/error vocabulary
 [ ] event GET authentication decision (public, or server key)
 [ ] server API key if required (provisioned by Core into Vercel; never committed)
-[ ] CORS allowlist (engsoc.org, www.engsoc.org; preview → staging only; Retry-After exposed)
+[ ] CORS allowlist (essqu.com, www.essqu.com; preview → staging only; Retry-After exposed)
 [ ] rate-limit semantics (limits, 429 body, Retry-After)
 [ ] cache/freshness guidance (is 45 s acceptable? on-demand revalidation webhook?)
 [ ] staging test event (for contract tests and Preview)

@@ -9,13 +9,13 @@ This is a new target architecture and intentionally replaces the previous single
 ## Target architecture
 
 ```text
-engsoc.org
+essqu.com
   → Landing Vercel project
 
-api.engsoc.org
+api.essqu.com
   → Core Vercel project API
 
-admin.engsoc.org
+admin.essqu.com
   → Core Vercel project administration
 ```
 
@@ -81,7 +81,7 @@ Mocks are allowed only for development and tests.
 Use a versioned namespace from the beginning:
 
 ```text
-https://api.engsoc.org/v1/
+https://api.essqu.com/v1/
 ```
 
 Initial read surface:
@@ -150,7 +150,7 @@ Database
 Recommended server-only environment variables:
 
 ```text
-CORE_API_BASE_URL=https://api.engsoc.org
+CORE_API_BASE_URL=https://api.essqu.com
 CORE_EVENTS_API_KEY=<server-only secret if Core requires one>
 ```
 
@@ -193,9 +193,9 @@ The landing must not implement authoritative duplicate detection, capacity alloc
 Recommended production flow:
 
 ```text
-Browser at engsoc.org
+Browser at essqu.com
   ↓
-POST api.engsoc.org/v1/events/{id}/registrations
+POST api.essqu.com/v1/events/{id}/registrations
   ↓
 Core validates Origin + input + rate limit
   ↓
@@ -208,13 +208,13 @@ This direct browser-to-Core registration path also avoids hiding the visitor beh
 
 ## CORS and Origin
 
-`engsoc.org` and `api.engsoc.org` are different origins.
+`essqu.com` and `api.essqu.com` are different origins.
 
 Core should explicitly allow approved production origins, for example:
 
 ```text
-https://engsoc.org
-https://www.engsoc.org
+https://essqu.com
+https://www.essqu.com
 ```
 
 Do not request wildcard CORS for registration.
@@ -228,7 +228,7 @@ The landing must not authenticate administrators, query admin APIs, store admin 
 Admins use:
 
 ```text
-https://admin.engsoc.org
+https://admin.essqu.com
 ```
 
 ## Landing integration module
@@ -316,7 +316,7 @@ PREVIEW:
 CORE_API_BASE_URL=<staging/rehearsal Core API>
 
 PRODUCTION:
-CORE_API_BASE_URL=https://api.engsoc.org
+CORE_API_BASE_URL=https://api.essqu.com
 ```
 
 Do not point Preview at production merely for convenience.
@@ -456,13 +456,13 @@ Do not disable tests to complete migration preparation.
 Landing:
 
 ```text
-GitHub → Vercel Project A → engsoc.org
+GitHub → Vercel Project A → essqu.com
 ```
 
 Core:
 
 ```text
-GitHub → Vercel Project B → api.engsoc.org / admin.engsoc.org
+GitHub → Vercel Project B → api.essqu.com / admin.essqu.com
 ```
 
 DNS cutover is a separate owner-controlled operation.

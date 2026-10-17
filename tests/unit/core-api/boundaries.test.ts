@@ -54,7 +54,7 @@ describe('Core API boundaries', () => {
   })
 
   it('hard-codes no Core address: the base URL always comes from the environment', () => {
-    const offenders = files.filter((f) => /https?:\/\/(?:api\.)?engsoc\.org|https?:\/\/admin\.engsoc\.org/.test(f.text)).map((f) => f.path)
+    const offenders = files.filter((f) => /https?:\/\/(?:api\.)?essqu\.com|https?:\/\/admin\.essqu\.com/.test(f.text)).map((f) => f.path)
     expect(offenders).toEqual([])
   })
 })
