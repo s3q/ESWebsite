@@ -1,17 +1,14 @@
 import type { DrawingId } from '@/components/ui/drawings'
 import type { ActivityId } from '@/content/activities'
 import type { DisciplineId } from '@/content/disciplines'
-import { EVENTS } from '@/content/events'
 import type { MediaImage } from '@/content/media'
 import type { Localized } from '@/lib/i18n'
 
 /**
- * SAMPLE CONTENT: the event catalogue behind /events and /events/[slug].
- *
- * No events have been published through the platform yet. These records show how published
- * events will look once the events module (PRD UC-02) is connected: every one is `sample: true`
- * and the pages carry a platform-preview notice. The first three reuse the homepage's sample
- * events (content/events.ts), which stay exactly as the homepage shows them.
+ * SAMPLE CONTENT for the gated prototypes only (member profile, attendance log, certificates;
+ * see content/site.ts → COMING_SOON). These are NOT the site's events: the homepage, /events
+ * and /events/[id] read published events from the Core API (lib/core-api) and nothing else.
+ * Every record here is `sample: true`.
  *
  * Registration here is a prototype: `registration` is the event's state, and a visitor's own
  * registration is held only in the browser session (components/platform/DemoSession.tsx).
@@ -61,10 +58,52 @@ export interface PlatformEvent {
   featured?: boolean
 }
 
-const home = (id: string) => {
-  const e = EVENTS.find((x) => x.id === id)
-  if (!e) throw new Error(`Missing homepage event ${id}`)
-  return { slug: e.id, title: e.title, start: e.start, end: e.end, location: e.location, summary: e.description, drawing: e.drawing }
+type BaseRecord = Pick<PlatformEvent, 'slug' | 'title' | 'start' | 'end' | 'location' | 'summary' | 'drawing'>
+
+/** The three sample events the homepage previewed before it read the Core API. */
+const BASE: BaseRecord[] = [
+  {
+    slug: 'intro-robotics-workshop',
+    title: { en: 'Intro to Robotics Workshop', ar: 'ورشة مدخل إلى الروبوتات' },
+    start: '2026-10-12T16:00:00+04:00',
+    end: '2026-10-12T18:00:00+04:00',
+    location: { en: 'College of Engineering, on campus', ar: 'كلية الهندسة، داخل الحرم الجامعي' },
+    summary: {
+      en: 'A hands-on build session for first-time robotics students: wire a sensor, program a microcontroller and leave with a prototype that moves.',
+      ar: 'جلسة بناء تطبيقية للمبتدئين في الروبوتات: صِل مستشعرًا، وبرمج متحكّمًا دقيقًا، وغادر ومعك نموذج أولي يتحرك.',
+    },
+    drawing: 'robotics-workshop',
+  },
+  {
+    slug: 'engineering-careers-panel',
+    title: { en: 'Engineering Careers Panel', ar: 'ندوة المسارات المهنية الهندسية' },
+    start: '2026-11-03T18:30:00+04:00',
+    end: '2026-11-03T20:00:00+04:00',
+    location: { en: 'On campus', ar: 'داخل الحرم الجامعي' },
+    summary: {
+      en: 'Graduates from across the disciplines on life after SQU: first roles, graduate study and what they wish they had started sooner.',
+      ar: 'خريجون من مختلف التخصصات يتحدثون عن الحياة بعد الجامعة: الوظائف الأولى، والدراسات العليا، وما تمنّوا لو بدؤوه مبكرًا.',
+    },
+    drawing: 'careers-panel',
+  },
+  {
+    slug: 'sustainable-infrastructure-visit',
+    title: { en: 'Sustainable Infrastructure Site Visit', ar: 'زيارة ميدانية لمشروع بنية تحتية مستدامة' },
+    start: '2026-11-19T08:30:00+04:00',
+    end: '2026-11-19T12:00:00+04:00',
+    location: { en: 'Off-campus site, Muscat', ar: 'موقع خارج الحرم الجامعي، مسقط' },
+    summary: {
+      en: 'A guided look inside a civil project in Muscat, from foundations to finishing works.',
+      ar: 'جولة بصحبة مرشد داخل مشروع إنشائي في مسقط، من الأساسات حتى أعمال التشطيب.',
+    },
+    drawing: 'site-visit',
+  },
+]
+
+const home = (slug: string): BaseRecord => {
+  const e = BASE.find((x) => x.slug === slug)
+  if (!e) throw new Error(`Missing base sample event ${slug}`)
+  return e
 }
 
 const photo = (src: string, width: number, height: number, alt: Localized, focus?: string): MediaImage => ({ src, width, height, alt, focus })

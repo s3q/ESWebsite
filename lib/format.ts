@@ -27,9 +27,12 @@ function formats(intl: string): Formats {
   return f
 }
 
+/** A date-only value ('2026-11-03') is that day in Oman; anything else is an instant. */
+const instant = (iso: string) => new Date(iso.length === 10 ? `${iso}T12:00:00+04:00` : iso)
+
 /** Event dates are always shown in Oman time, whatever the viewer's or server's zone. */
 export function eventDateParts(iso: string, intl: string) {
-  const d = new Date(iso)
+  const d = instant(iso)
   const f = formats(intl)
   return {
     day: f.day.format(d),
@@ -43,6 +46,16 @@ export function eventDateParts(iso: string, intl: string) {
 export function eventTimeRange(startIso: string, endIso: string, intl: string) {
   const f = formats(intl)
   return `${f.time.format(new Date(startIso))}–${f.time.format(new Date(endIso))}`
+}
+
+/** An event's start time ('16:00'), in Oman time. */
+export function eventTime(startIso: string, intl: string) {
+  return formats(intl).time.format(new Date(startIso))
+}
+
+/** The start time in a left-to-right isolate, so it never reverses inside Arabic text. */
+export function timeIsolated(startIso: string, intl: string) {
+  return `\u2066${eventTime(startIso, intl)}\u2069`
 }
 
 /** Whole numbers with the language's grouping (1,250), always in Western digits. */

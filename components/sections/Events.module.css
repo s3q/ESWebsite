@@ -101,8 +101,19 @@
 }
 
 .description {
+  display: -webkit-box;
   max-width: var(--measure);
+  overflow: hidden;
   color: var(--text-secondary);
+  /* Descriptions come from Core at any length; the event's page has the full text. */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
+
+.rowMain .description {
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 .meta {
@@ -261,6 +272,10 @@
   border-radius: var(--radius-card);
   color: var(--text-secondary);
   text-align: center;
+}
+
+.more {
+  margin-top: var(--space-7);
 }
 
 /* Hover and keyboard focus share the same restrained response. */

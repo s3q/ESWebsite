@@ -12,12 +12,15 @@ import { routes } from '@/lib/routes'
 import { DEMO_NOW } from './clock'
 
 /**
- * The platform's data access. Every page reads through these functions, never from content/
- * directly, so connecting the real API means replacing the bodies here (fetch, auth headers,
- * error handling) while the pages and their components stay as they are.
+ * Prototype data access for the platform modules that are not open yet (content/site.ts →
+ * COMING_SOON). Every page reads through these functions, never from content/ directly.
  *
- * Today they return the local sample records from content/platform. They are async on purpose:
- * pages already await them exactly as they will await the API.
+ * Public EVENTS are not here: they come from the Core API through lib/core-api
+ * (listPublicEvents / getPublicEvent), which is their only source. The sample event catalogue
+ * remains only behind the gated member profile, attendance and certificate prototypes.
+ *
+ * These return the local sample records from content/platform. They are async on purpose:
+ * pages already await them as they will await the Core API.
  */
 
 export type { Certificate, Graduate, Member, PlatformEvent, Project }
@@ -26,41 +29,16 @@ export type { AttendanceStatus }
 export { DEMO_NOW }
 const NOW = new Date(DEMO_NOW).getTime()
 
-// ---------------------------------------------------------------- events
+// ---------------------------------------------------------------- sample events (prototype only)
 
-export type EventPhase = 'upcoming' | 'past'
+const isUpcoming = (e: Pick<PlatformEvent, 'end'>) => new Date(e.end).getTime() >= NOW
 
-export function eventPhase(e: Pick<PlatformEvent, 'end'>): EventPhase {
-  return new Date(e.end).getTime() < NOW ? 'past' : 'upcoming'
-}
-
-export function seatsLeft(e: Pick<PlatformEvent, 'capacity' | 'registered'>) {
-  return Math.max(0, e.capacity - e.registered)
-}
-
-export async function getEvents(): Promise<PlatformEvent[]> {
+/**
+ * The sample events behind the gated profile prototype's attendance log. Not public events:
+ * those come from the Core API (lib/core-api).
+ */
+export async function getSampleEvents(): Promise<PlatformEvent[]> {
   return [...EVENT_CATALOGUE].sort((a, b) => a.start.localeCompare(b.start))
-}
-
-export async function getEvent(slug: string): Promise<PlatformEvent | null> {
-  return EVENT_CATALOGUE.find((e) => e.slug === slug) ?? null
-}
-
-/** Events that share a discipline or an activity, nearest in time first. */
-export async function getRelatedEvents(event: PlatformEvent, limit = 3): Promise<PlatformEvent[]> {
-  const t = new Date(event.start).getTime()
-  return EVENT_CATALOGUE.filter((e) => e.slug !== event.slug)
-    .map((e) => ({
-      e,
-      score:
-        e.disciplines.filter((d) => event.disciplines.includes(d)).length * 2 +
-        (e.activity && e.activity === event.activity ? 3 : 0) +
-        (e.type === event.type ? 1 : 0),
-    }))
-    .filter((x) => x.score > 0)
-    .sort((a, b) => b.score - a.score || Math.abs(new Date(a.e.start).getTime() - t) - Math.abs(new Date(b.e.start).getTime() - t))
-    .slice(0, limit)
-    .map((x) => x.e)
 }
 
 // ---------------------------------------------------------------- projects
@@ -152,7 +130,7 @@ function buildProfile(member: Member): MemberProfile {
       if (!event) return null
       const issued = certificates.some((c) => c.eventSlug === event.slug && c.status === 'valid')
       const certificate: AttendanceEntry['certificate'] =
-        eventPhase(event) === 'upcoming'
+        isUpcoming(event)
           ? 'after-event'
           : issued
             ? 'issued'

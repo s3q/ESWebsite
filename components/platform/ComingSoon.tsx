@@ -15,6 +15,7 @@ const SHEET_CODE: Record<UpcomingModule, string> = {
   network: 'ES-GRD-01',
   certificates: 'ES-CRT-01',
   register: 'ES-MEM-01',
+  profile: 'ES-PRF-01',
 }
 
 /**
@@ -218,6 +219,28 @@ function Glyph({ module }: { module: UpcomingModule }) {
         ))}
         <circle cx="302" cy="112" r="15" className={`${styles.ring} ${styles.pulse}`} />
         <circle cx="302" cy="112" r="6" className={styles.accentFill} />
+      </g>
+    )
+  }
+  if (module === 'profile') {
+    // The member's leaf frame, with their journey drawn out beside it.
+    return (
+      <g>
+        <path d={leaf(146, 142, 52)} className={styles.ink} />
+        <circle cx="146" cy="128" r="15" className={styles.ink} />
+        <path d="M118 176a30 30 0 0 1 56 0" className={styles.ink} />
+        <path d="M212 196L250 158L290 172L324 116" className={styles.dimension} />
+        {[
+          [212, 196],
+          [250, 158],
+          [290, 172],
+          [324, 116],
+        ].map(([x, y], i) => (
+          <circle key={i} cx={x} cy={y} r="6" className={`${styles.inkFill} ${styles.node}`} style={{ '--n': i } as CSSProperties} />
+        ))}
+        <circle cx="324" cy="116" r="15" className={`${styles.ring} ${styles.pulse}`} />
+        <circle cx="324" cy="116" r="6" className={styles.accentFill} />
+        <path d="M94 226H324M94 220v12M324 220v12" className={styles.dimension} />
       </g>
     )
   }

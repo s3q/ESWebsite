@@ -68,13 +68,13 @@ export function PlatformHero({
 // ---------------------------------------------------------------- sample notice
 
 /** One quiet, honest notice per page instead of a "demo" tag on every card. */
-export function SampleNotice({ className }: { className?: string }) {
+export function SampleNotice({ className, strong, body }: { className?: string; strong?: string; body?: string }) {
   const { t } = useI18n()
   return (
     <p className={[styles.sample, className].filter(Boolean).join(' ')}>
       <span className="status-dot" aria-hidden="true" />
       <span>
-        <strong>{t.platform.sample.strong}</strong> {t.platform.sample.body}
+        <strong>{strong ?? t.platform.sample.strong}</strong> {body ?? t.platform.sample.body}
       </span>
     </p>
   )

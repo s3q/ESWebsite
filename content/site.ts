@@ -60,10 +60,12 @@ export const FOOTER_GROUPS = [
 /**
  * Platform modules that are not open yet. Their pages show a Coming Soon state instead of the
  * full implementation, which stays in place: remove an id here to bring its page back.
+ * `profile` (a member's own page and registrations) waits for member accounts, which belong
+ * to the Core Platform's authentication, not to this site.
  */
-export const COMING_SOON: readonly UpcomingModule[] = ['projects', 'members', 'network', 'certificates', 'register']
+export const COMING_SOON: readonly UpcomingModule[] = ['projects', 'members', 'network', 'certificates', 'register', 'profile']
 
-export type UpcomingModule = 'projects' | 'members' | 'network' | 'certificates' | 'register'
+export type UpcomingModule = 'projects' | 'members' | 'network' | 'certificates' | 'register' | 'profile'
 
 export const isComingSoon = (module: UpcomingModule) => COMING_SOON.includes(module)
 

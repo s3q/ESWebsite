@@ -3,7 +3,7 @@ import type { DisciplineId } from '@/content/disciplines'
 /**
  * Every internal address the site builds, in one place, so a record is reached by the same URL
  * from every page that mentions it. Records keep the identifiers their data already uses:
- * event and project slugs, member, graduate and certificate ids, and the discipline ids that
+ * Core event ids, project slugs, member, graduate and certificate ids, and the discipline ids that
  * the filters (`?discipline=`) and the Disciplines page's sections (`#mechanical`) share.
  */
 export const routes = {
@@ -21,7 +21,8 @@ export const routes = {
   profileEvents: '/profile/events',
   register: '/register',
 
-  event: (slug: string) => `/events/${slug}`,
+  /** An event's page, by its Core id (already URL-safe; see lib/core-api/adapter.ts). */
+  event: (id: string) => `/events/${id}`,
   project: (slug: string) => `/projects/${slug}`,
   member: (id: string) => `/members/${id}`,
   graduate: (id: string) => `/network/${id}`,

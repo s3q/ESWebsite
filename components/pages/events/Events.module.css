@@ -509,72 +509,10 @@
   font-size: var(--text-small);
 }
 
-.cardFoot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-  margin-top: var(--space-1);
-}
-
-.cardKeys {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-}
-
-.cardKey {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.footText {
   color: var(--text-secondary);
   font-size: var(--text-label);
   font-weight: 600;
-}
-
-.cardKey::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50% 50% 50% 0;
-  background: var(--key);
-}
-
-.seats {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.seatBar {
-  position: relative;
-  width: 64px;
-  height: 6px;
-  overflow: hidden;
-  border-radius: 6px;
-  background: var(--surface-soft);
-  box-shadow: inset 0 0 0 1px var(--border);
-}
-
-.seatBar::after {
-  content: '';
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  width: var(--fill);
-  border-radius: 6px;
-  background: var(--brand-primary);
-}
-
-.seatText {
-  color: var(--text-secondary);
-  font-size: var(--text-label);
-  font-weight: 600;
-}
-
-.cardMedia {
-  display: none !important;
 }
 
 /* The narrowest phones: the date stamp runs across the top of the card. */
@@ -621,21 +559,8 @@
   }
 
   .card {
-    grid-template-columns: auto minmax(0, 1fr) 168px;
     gap: var(--space-5);
     padding: var(--space-5);
-  }
-
-  .cardMedia {
-    display: block !important;
-    width: 168px !important;
-    height: 112px !important;
-    border-radius: 12px;
-  }
-
-  .row[data-past] .cardMedia {
-    filter: grayscale(0.6);
-    opacity: 0.85;
   }
 }
 
@@ -711,6 +636,11 @@
   }
 }
 
+/* An event Core couldn't return just now: the state message on its own. */
+.detailState {
+  padding-block: var(--space-9) var(--section-space);
+}
+
 .detailBody {
   display: grid;
   gap: var(--space-9);
@@ -728,48 +658,6 @@
 .blockTitle {
   margin-bottom: var(--space-5);
   font-size: var(--text-h3);
-}
-
-/* The programme on a time ruler. */
-.programme {
-  position: relative;
-  display: grid;
-  border-inline-start: 2px solid var(--text-primary);
-}
-
-.slot {
-  position: relative;
-  display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr);
-  gap: var(--space-4);
-  padding: var(--space-3) 0 var(--space-3) var(--space-5);
-  border-bottom: 1px solid var(--border);
-}
-
-.slot::before {
-  content: '';
-  position: absolute;
-  top: 1.35rem;
-  inset-inline-start: -7px;
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--text-primary);
-  border-radius: 50%;
-  background: var(--surface);
-}
-
-.slotTime {
-  direction: ltr;
-  color: var(--brand-primary);
-  font-family: var(--font-display-latin);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  text-align: start;
-  unicode-bidi: isolate;
-}
-
-.slotTitle {
-  font-weight: 600;
 }
 
 .meta {
@@ -857,6 +745,17 @@
   font-weight: 600;
 }
 
+.done p {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+
+.done p span {
+  font-size: var(--text-small);
+  font-weight: 500;
+}
+
 .done svg {
   flex: none;
   width: 22px;
@@ -922,14 +821,136 @@
   transform: translateY(-3px);
 }
 
-.miniMedia {
-  aspect-ratio: 16 / 9;
-  height: auto;
-}
-
 .miniDate {
   color: var(--brand-primary);
   font-size: var(--text-label);
   font-weight: 700;
   text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------- registration form */
+
+.panelTitle {
+  font-size: var(--text-h4);
+  line-height: var(--leading-heading);
+}
+
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.form :global(.btn) {
+  width: 100%;
+}
+
+.fields {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.field > label {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.field input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-button);
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+  transition:
+    border-color var(--dur-hover) var(--ease-out),
+    box-shadow var(--dur-hover) var(--ease-out);
+}
+
+.field input[dir='ltr'] {
+  text-align: start;
+}
+
+:global(html[dir='rtl']) .field input[dir='ltr'] {
+  text-align: right;
+}
+
+.field input:focus-visible {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.field input:disabled {
+  opacity: 0.7;
+}
+
+.field[data-invalid] input {
+  border-color: #b3261e;
+  box-shadow: 0 0 0 3px rgb(179 38 30 / 0.08);
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: #b3261e;
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.error::before {
+  content: '!';
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #b3261e;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Core's answer when it isn't a success: a settled fact (info) or something to act on (error). */
+.notice {
+  padding: var(--space-3) var(--space-4);
+  border-inline-start: 3px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface-soft);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.notice p {
+  margin: 0;
+}
+
+.notice[data-tone='error'] {
+  border-color: #b3261e;
+  background: rgb(179 38 30 / 0.06);
+  color: #8c1d18;
+}
+
+.done:focus,
+.notice:focus {
+  outline: none;
+}
+
+.done:focus-visible,
+.notice:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
 }

@@ -30,7 +30,6 @@ export const disciplinesEn = {
     industrial: ['Operations research', 'Quality systems', 'Supply chains'],
   } satisfies Record<DisciplineId, string[]>,
   projects: (n: number) => pluralEn(n, 'sample project', 'sample projects'),
-  events: (n: number) => pluralEn(n, 'upcoming event', 'upcoming events'),
   members: (n: number) => pluralEn(n, 'sample member', 'sample members'),
   viewProjects: 'See projects',
   viewEvents: 'See events',
@@ -82,15 +81,6 @@ export const disciplinesAr: DisciplinesCopy = {
       few: (c) => `${c} مشاريع تجريبية`,
       many: (c) => `${c} مشروعًا تجريبيًا`,
       other: (c) => `${c} مشروع تجريبي`,
-    }),
-  events: (n: number) =>
-    pluralAr(n, {
-      zero: () => 'لا فعاليات قادمة',
-      one: () => 'فعالية قادمة واحدة',
-      two: () => 'فعاليتان قادمتان',
-      few: (c) => `${c} فعاليات قادمة`,
-      many: (c) => `${c} فعالية قادمة`,
-      other: (c) => `${c} فعالية قادمة`,
     }),
   members: (n: number) =>
     pluralAr(n, {

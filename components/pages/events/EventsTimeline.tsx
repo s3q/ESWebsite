@@ -4,26 +4,22 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
-import { useRef, useState, type CSSProperties } from 'react'
+import { useRef, useState } from 'react'
 import { ChipGroup, FilterSheet, ResultBar, SearchField, Skeleton, StateMessage, previewState } from '@/components/discovery/Discovery'
 import { matchesQuery, useQueryState } from '@/components/discovery/useQueryState'
 import { useI18n } from '@/components/i18n/I18nProvider'
-import { useDemoSession } from '@/components/platform/DemoSession'
 import { StatusBadge } from '@/components/platform/Platform'
-import { STATUS_TONE, eventStatus, isPast, myRegistration, seatsTaken } from '@/components/platform/registration'
-import { ItemMedia } from '@/components/ui/Plate'
-import { DISCIPLINES, DISCIPLINE_BY_ID, type DisciplineId } from '@/content/disciplines'
-import type { PlatformEvent, PlatformEventType } from '@/content/platform/events'
-import { DISCIPLINE_COLOR } from '@/content/platform/taxonomy'
-import { DEMO_NOW } from '@/lib/data/clock'
-import { eventDateParts, timeRangeIsolated } from '@/lib/format'
+import { omanDateKey } from '@/lib/core-api/adapter'
+import type { EventView } from '@/lib/core-api/types'
+import { eventDateParts, timeIsolated } from '@/lib/format'
+import { BADGE_TONE, badgeFor } from './availability'
 import styles from './Events.module.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-const KEYS = ['q', 'type', 'discipline', 'when'] as const
-const TYPES: PlatformEventType[] = ['workshop', 'talk', 'site-visit', 'competition', 'seminar', 'exhibition']
-const monthKey = (iso: string) => iso.slice(0, 7)
+const KEYS = ['q', 'when'] as const
+/** 'YYYY-MM' of the event's day in Oman. */
+const monthKey = (iso: string) => omanDateKey(iso).slice(0, 7)
 
 /** Past events shown before "Show earlier events" folds the rest away. */
 const PAST_VISIBLE = 2
@@ -33,58 +29,44 @@ const PAST_VISIBLE = 2
  * above (the oldest folded away), a gold marker sets today on the line, and what comes next
  * runs below it, the nearest event marked. The line fills as the visitor reads down, a small
  * light riding its front, and each event's node lights as the line reaches it.
+ *
+ * Events arrive from the Core API (lib/core-api) already validated and adapted; `unavailable`
+ * means Core couldn't be reached, which is told apart from an honest empty list.
  */
-export function EventsTimeline({ events, held, state }: { events: PlatformEvent[]; held: string[]; state?: string }) {
-  const { t, l, intl } = useI18n()
+export function EventsTimeline({ events, now, unavailable = false, state }: { events: EventView[]; now: string; unavailable?: boolean; state?: string }) {
+  const { t, intl } = useI18n()
   const c = t.platform.eventsPage
   const f = t.platform.filters
-  const view = previewState(state)
-  const session = useDemoSession()
+  const view = unavailable ? 'error' : previewState(state)
   const { values, lists, set, toggle, clear, activeCount } = useQueryState(KEYS)
   const root = useRef<HTMLDivElement>(null)
   const [showAllPast, setShowAllPast] = useState(false)
 
+  const thisMonth = monthKey(now)
   const data = view === 'empty' ? [] : events
-  const passes = (e: PlatformEvent, skip?: (typeof KEYS)[number]) => {
-    const past = isPast(e)
+  const passes = (e: EventView, skip?: (typeof KEYS)[number]) => {
+    const past = e.phase === 'past'
     return (
-      (skip === 'q' || matchesQuery(values.q, l(e.title), l(e.summary), l(e.location))) &&
-      (skip === 'type' || lists.type.length === 0 || lists.type.includes(e.type)) &&
-      (skip === 'discipline' || lists.discipline.length === 0 || e.disciplines.some((d) => lists.discipline.includes(d))) &&
+      (skip === 'q' || matchesQuery(values.q, e.title, e.description, e.location, e.committeeName)) &&
       (skip === 'when' ||
         lists.when.length === 0 ||
         (lists.when.includes('upcoming') && !past) ||
         (lists.when.includes('past') && past) ||
-        (lists.when.includes('month') && monthKey(e.start) === DEMO_NOW.slice(0, 7)))
+        (lists.when.includes('month') && monthKey(e.startsAt) === thisMonth))
     )
   }
   const shown = data.filter((e) => passes(e))
-  const upcoming = shown.filter((e) => !isPast(e)).sort((a, b) => a.start.localeCompare(b.start))
-  const past = shown.filter((e) => isPast(e)).sort((a, b) => a.start.localeCompare(b.start))
+  const upcoming = shown.filter((e) => e.phase === 'upcoming')
+  const past = shown.filter((e) => e.phase === 'past')
   // The oldest past events fold away unless the visitor is looking for them.
   const foldable = !showAllPast && !values.q && !lists.when.includes('past') && past.length > PAST_VISIBLE + 1
   const pastShown = foldable ? past.slice(-PAST_VISIBLE) : past
   const folded = past.length - pastShown.length
-  const nextSlug = upcoming[0]?.slug
+  const nextId = upcoming[0]?.id
 
-  const count = (pred: (e: PlatformEvent) => boolean, skip: (typeof KEYS)[number]) => data.filter((e) => pred(e) && passes(e, skip)).length
-  const typeOptions = TYPES.filter((ty) => data.some((e) => e.type === ty)).map((ty) => ({
-    value: ty,
-    label: t.platform.eventTypes[ty],
-    count: count((e) => e.type === ty, 'type'),
-  }))
-  const disciplineOptions = DISCIPLINES.map((d) => ({
-    value: d.id,
-    label: l(d.shortName),
-    color: DISCIPLINE_COLOR[d.id],
-    count: count((e) => e.disciplines.includes(d.id), 'discipline'),
-  }))
   const whenOptions = (['upcoming', 'month', 'past'] as const).map((w) => ({ value: w, label: c.whenOptions[w] }))
-
   const active = [
     ...lists.when.map((v) => ({ key: `w${v}`, label: c.whenOptions[v as keyof typeof c.whenOptions] ?? v, onRemove: () => toggle('when', v) })),
-    ...lists.type.map((v) => ({ key: `t${v}`, label: t.platform.eventTypes[v as PlatformEventType] ?? v, onRemove: () => toggle('type', v) })),
-    ...lists.discipline.map((v) => ({ key: `d${v}`, label: l(DISCIPLINE_BY_ID[v as DisciplineId]?.shortName ?? { en: v, ar: v }), onRemove: () => toggle('discipline', v) })),
     ...(values.q ? [{ key: 'q', label: `“${values.q}”`, onRemove: () => set({ q: null }) }] : []),
   ]
 
@@ -135,32 +117,17 @@ export function EventsTimeline({ events, held, state }: { events: PlatformEvent[
 
   const monthLabel = (key: string) => new Intl.DateTimeFormat(intl, { month: 'long', year: 'numeric', timeZone: 'Asia/Muscat' }).format(new Date(`${key}-15T12:00:00+04:00`))
 
-  const filters = (
-    <>
-      <ChipGroup label={c.when} options={whenOptions} selected={lists.when} onToggle={(v) => toggle('when', v)} allLabel={f.all} onAll={() => set({ when: null })} />
-      <ChipGroup label={f.type} options={typeOptions} selected={lists.type} onToggle={(v) => toggle('type', v)} allLabel={f.all} onAll={() => set({ type: null })} />
-      <ChipGroup
-        label={f.discipline}
-        options={disciplineOptions}
-        selected={lists.discipline}
-        onToggle={(v) => toggle('discipline', v)}
-        allLabel={f.all}
-        onAll={() => set({ discipline: null })}
-      />
-    </>
-  )
+  const filters = <ChipGroup label={c.when} options={whenOptions} selected={lists.when} onToggle={(v) => toggle('when', v)} allLabel={f.all} onAll={() => set({ when: null })} />
 
-  const row = (e: PlatformEvent) => {
-    const d = eventDateParts(e.start, intl)
-    const mine = myRegistration(e.slug, session.registrations, held)
-    const status = eventStatus(e, mine)
-    const taken = seatsTaken(e, session.registrations, held)
-    const left = Math.max(0, e.capacity - taken)
+  const row = (e: EventView) => {
+    const d = eventDateParts(e.startsAt, intl)
+    const badge = badgeFor(e)
+    const meta = [e.hasTime ? timeIsolated(e.startsAt, intl) : null, e.location || null].filter(Boolean).join(' · ')
     return (
-      <li key={e.slug} className={styles.row} data-past={isPast(e) || undefined} data-next={e.slug === nextSlug || undefined}>
+      <li key={e.id} className={styles.row} data-past={e.phase === 'past' || undefined} data-next={e.id === nextId || undefined}>
         <span className={styles.node} data-node="" aria-hidden="true" />
-        {e.slug === nextSlug && <p className={styles.nextLabel}>{c.nextUp}</p>}
-        <Link href={`/events/${e.slug}`} className={styles.card}>
+        {e.id === nextId && <p className={styles.nextLabel}>{c.nextUp}</p>}
+        <Link href={e.href} className={styles.card}>
           <span className={styles.stamp}>
             <span className={styles.stampDay}>{d.day}</span>
             <span className={styles.stampMonth}>{d.month}</span>
@@ -168,43 +135,21 @@ export function EventsTimeline({ events, held, state }: { events: PlatformEvent[
           </span>
           <span className={styles.cardBody}>
             <span className={styles.cardTop}>
-              <span className="chip">{t.platform.eventTypes[e.type]}</span>
-              <StatusBadge tone={STATUS_TONE[status]}>{t.platform.status[status]}</StatusBadge>
+              {e.committeeName && <span className="chip">{e.committeeName}</span>}
+              <StatusBadge tone={BADGE_TONE[badge]}>{c.availability[badge]}</StatusBadge>
             </span>
-            <span className={styles.cardTitle}>{l(e.title)}</span>
-            <span className={styles.cardMeta}>
-              {timeRangeIsolated(e.start, e.end, intl)} · {l(e.location)}
-            </span>
-            <span className={styles.cardFoot}>
-              <span className={styles.cardKeys}>
-                {e.disciplines.map((k) => (
-                  <span key={k} className={styles.cardKey} style={{ '--key': DISCIPLINE_COLOR[k] } as CSSProperties}>
-                    {l(DISCIPLINE_BY_ID[k].shortName)}
-                  </span>
-                ))}
-              </span>
-              {status === 'completed' ? (
-                e.attended ? <span className={styles.seatText}>{c.attended(e.attended)}</span> : null
-              ) : (
-                <span className={styles.seats}>
-                  <span className={styles.seatBar} style={{ '--fill': `${Math.min(100, (taken / e.capacity) * 100)}%` } as CSSProperties} aria-hidden="true" />
-                  <span className={styles.seatText}>
-                    {status === 'waitlist' || status === 'waitlisted' ? c.waitlistCount(e.waitlist ?? 0) : c.seats(left, e.capacity)}
-                  </span>
-                </span>
-              )}
-            </span>
+            <span className={styles.cardTitle}>{e.title}</span>
+            {meta && <span className={styles.cardMeta}>{meta}</span>}
           </span>
-          <ItemMedia id={`tl-${e.slug}`} drawing={e.drawing} image={e.image ? { src: e.image.src, alt: '', focus: e.image.focus } : undefined} sizes="160px" className={styles.cardMedia} />
         </Link>
       </li>
     )
   }
 
-  const groups = (list: PlatformEvent[]) => {
-    const out: { key: string; items: PlatformEvent[] }[] = []
+  const groups = (list: EventView[]) => {
+    const out: { key: string; items: EventView[] }[] = []
     for (const e of list) {
-      const k = monthKey(e.start)
+      const k = monthKey(e.startsAt)
       const g = out.find((x) => x.key === k)
       if (g) g.items.push(e)
       else out.push({ key: k, items: [e] })
@@ -215,14 +160,18 @@ export function EventsTimeline({ events, held, state }: { events: PlatformEvent[
   return (
     <section className={styles.timelineSection} aria-label={c.timelineLabel}>
       <div className="container">
-        <div className={styles.toolbar}>
-          <SearchField value={values.q} onChange={(v) => set({ q: v || null })} placeholder={c.searchPlaceholder} label={c.searchLabel} />
-          <FilterSheet active={activeCount} shown={shown.length}>
-            {filters}
-          </FilterSheet>
-          <div className={styles.inlineFilters}>{filters}</div>
-        </div>
-        <ResultBar shown={shown.length} total={data.length} active={active} onClearAll={() => clear()} />
+        {!unavailable && (
+          <>
+            <div className={styles.toolbar}>
+              <SearchField value={values.q} onChange={(v) => set({ q: v || null })} placeholder={c.searchPlaceholder} label={c.searchLabel} />
+              <FilterSheet active={activeCount} shown={shown.length}>
+                {filters}
+              </FilterSheet>
+              <div className={styles.inlineFilters}>{filters}</div>
+            </div>
+            <ResultBar shown={shown.length} total={data.length} active={active} onClearAll={() => clear()} />
+          </>
+        )}
 
         {view === 'loading' ? (
           <ol className={styles.track} aria-busy="true" aria-label={t.platform.states.loading}>
@@ -242,8 +191,8 @@ export function EventsTimeline({ events, held, state }: { events: PlatformEvent[
         ) : view === 'error' ? (
           <StateMessage
             kind="error"
-            title={t.platform.states.errorTitle}
-            body={t.platform.states.errorBody}
+            title={unavailable ? c.unavailableTitle : t.platform.states.errorTitle}
+            body={unavailable ? c.unavailableBody : t.platform.states.errorBody}
             action={
               <a href="?" className="btn btn--secondary">
                 {t.platform.states.retry}
@@ -293,7 +242,7 @@ export function EventsTimeline({ events, held, state }: { events: PlatformEvent[
             <div className={styles.today}>
               <span className={styles.todayMark} aria-hidden="true" />
               <p className={styles.todayText}>
-                <strong>{c.today}</strong> · {eventDateParts(DEMO_NOW, intl).long}
+                <strong>{c.today}</strong> · {eventDateParts(now, intl).long}
                 <span className={styles.todayNote}>{c.todayNote}</span>
               </p>
             </div>
@@ -321,4 +270,3 @@ export function EventsTimeline({ events, held, state }: { events: PlatformEvent[
     </section>
   )
 }
-

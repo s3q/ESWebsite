@@ -33,7 +33,6 @@ const ACCENTS = DISCIPLINES.map((d) => DISCIPLINE_COLOR[d.id])
 
 export interface DisciplineCounts {
   projects: number
-  events: number
   members: number
 }
 
@@ -205,8 +204,9 @@ export function DisciplinesExhibit({ counts }: { counts: Record<DisciplineId, Di
                     </Link>
                   </li>
                   <li>
-                    <Link href={`/events?discipline=${d.id}`} className={styles.ledgerLink}>
-                      {c.events(n.events)}
+                    {/* Core's public events carry no discipline, so this leads to the full timeline. */}
+                    <Link href="/events" className={styles.ledgerLink}>
+                      {c.viewEvents}
                       <IconArrowRight className="btn__arrow" />
                     </Link>
                   </li>

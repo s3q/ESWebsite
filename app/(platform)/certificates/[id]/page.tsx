@@ -6,7 +6,9 @@ import { CertificateDocument } from '@/components/pages/certificates/Certificate
 import { CERT_TONE } from '@/components/pages/certificates/tone'
 import styles from '@/components/pages/certificates/Certificates.module.css'
 import { Breadcrumbs } from '@/components/platform/Breadcrumbs'
+import { ComingSoon } from '@/components/platform/ComingSoon'
 import { StatusBadge } from '@/components/platform/Platform'
+import { isComingSoon } from '@/content/site'
 import { getCertificate } from '@/lib/data'
 import { formatMonthYear } from '@/lib/format'
 import { getI18n } from '@/lib/i18n/server'
@@ -16,10 +18,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params
   const [{ t, l }, cert] = await Promise.all([getI18n(), getCertificate(id)])
   const c = t.platform.certificatesPage
+  const soon = t.platform.comingSoon
+  if (isComingSoon('certificates')) return { title: soon.metaTitle(soon.modules.certificates.name), robots: { index: false } }
   return { title: cert ? `${l(cert.event)} · ${c.eyebrow}` : c.metaTitle, robots: { index: false } }
 }
 
 export default async function CertificatePage({ params }: { params: Promise<{ id: string }> }) {
+  // Sample certificates (and the sample events they name) wait with the vault.
+  if (isComingSoon('certificates')) return <ComingSoon module="certificates" />
   const { id } = await params
   const [i18n, cert] = await Promise.all([getI18n(), getCertificate(id)])
   if (!cert) notFound()

@@ -102,15 +102,6 @@ export const platformAr: PlatformDictionary = {
     pending: 'الحضور قيد التأكيد',
   },
 
-  eventTypes: {
-    workshop: 'ورشة عمل',
-    talk: 'محاضرة',
-    'site-visit': 'زيارة ميدانية',
-    competition: 'مسابقة',
-    seminar: 'ندوة',
-    exhibition: 'معرض',
-  },
-
   common: {
     back: 'رجوع',
     close: 'إغلاق',
@@ -174,6 +165,7 @@ export const platformAr: PlatformDictionary = {
       network: { name: 'شبكة الخريجين', note: 'خريجو الجماعة، والإرشاد للأعضاء الحاليين.' },
       certificates: { name: 'الشهادات', note: 'شهادات المشاركة، ومكتب للتحقق منها.' },
       register: { name: 'العضوية', note: 'يُفتح التسجيل في الجماعة الهندسية على المنصة لاحقاً.' },
+      profile: { name: 'ملفي', note: 'فعالياتك وتسجيلاتك وشهاداتك في مكان واحد، حين تُفتح حسابات الأعضاء على المنصة.' },
     },
     register: {
       eyebrow: 'العضوية',

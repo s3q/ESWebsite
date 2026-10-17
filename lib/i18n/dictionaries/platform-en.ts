@@ -88,15 +88,6 @@ export const platformEn = {
     pending: 'Attendance pending',
   },
 
-  eventTypes: {
-    workshop: 'Workshop',
-    talk: 'Talk',
-    'site-visit': 'Site visit',
-    competition: 'Competition',
-    seminar: 'Seminar',
-    exhibition: 'Exhibition',
-  },
-
   common: {
     back: 'Back',
     close: 'Close',
@@ -147,6 +138,7 @@ export const platformEn = {
       network: { name: 'Graduate network', note: 'The society’s graduates, and mentorship for current members.' },
       certificates: { name: 'Certificates', note: 'Participation certificates, and a desk to verify them.' },
       register: { name: 'Membership', note: 'Registration for the Engineering Society opens on the platform later.' },
+      profile: { name: 'My profile', note: 'Your events, registrations and certificates in one place, once member accounts open on the platform.' },
     },
     register: {
       eyebrow: 'Membership',

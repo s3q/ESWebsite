@@ -20,6 +20,7 @@ export type DrawingId =
   | 'truss'
   | 'shelter'
   | 'water-bench'
+  | 'calendar'
 
 function Callout({ x, y }: { x: number; y: number }) {
   return (
@@ -247,6 +248,36 @@ const waterBench = (
   </>
 )
 
+/**
+ * A wall calendar with one day ringed, and a clock: the neutral sheet for an event that has no
+ * photograph or subject drawing (events from the Core API carry neither). It suggests no
+ * particular kind of event.
+ */
+const CAL_X = [142, 170, 198, 226, 254, 282, 310, 338]
+const CAL_Y = [104, 136, 168, 200, 232]
+const calendar = (
+  <>
+    <path d="M60 248H420" className="l" />
+    <Hatch x1={60} x2={420} y={248} step={16} />
+    {/* The sheet, its title band and binding */}
+    <rect x="130" y="58" width="220" height="184" rx="6" className="f" />
+    <path d="M130 94H350" className="l" />
+    <rect x="150" y="71" width="64" height="10" rx="2" className="l" />
+    {[165, 215, 265, 315].map((x) => (
+      <rect key={x} x={x - 4} y="46" width="8" height="24" rx="4" className="f" />
+    ))}
+    {/* The month's grid */}
+    <path d={`${CAL_Y.map((y) => `M142 ${y}H338`).join('')}${CAL_X.map((x) => `M${x} 104V232`).join('')}`} className="c" />
+    <path d="M150 112h12M206 144h12M178 208h12M290 176h12" className="l" />
+    {/* A clock beside it */}
+    <circle cx="394" cy="200" r="24" className="f" />
+    <path d="M394 200V184M394 200l11 7" className="l" />
+    <path d="M394 166a34 34 0 0 1 32 24" className="c" />
+    <path d="M282 152C322 152 350 168 368 188" className="c" />
+    <Callout x={268} y={152} />
+  </>
+)
+
 export const DRAWINGS: Record<DrawingId, ReactNode> = {
   'robotics-workshop': roboticsWorkshop,
   'careers-panel': careersPanel,
@@ -256,4 +287,5 @@ export const DRAWINGS: Record<DrawingId, ReactNode> = {
   truss,
   shelter,
   'water-bench': waterBench,
+  calendar,
 }
