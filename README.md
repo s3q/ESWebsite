@@ -9,10 +9,11 @@ Earlier drafts are kept:
 - **Draft 2 / Draft 3** (Next.js): `drafts/draft-2-source.zip`, `drafts/draft-3-source.zip`.
 - **Draft 4 onward:** this repository's git history.
 
-Product scope comes from `PRD.pdf` (Idea & Requirements Document v1.0). There is no backend,
-authentication, database, API route or admin tool: the platform pages run on local sample data,
-and every action (registering, requesting mentorship, applying to join) happens in the browser
-tab only. See **Platform prototype** below.
+Product scope comes from `PRD.pdf` (Idea & Requirements Document v1.0). **Events and event
+registration come from the Core Platform API** (`lib/core-api`, see [Core API](#core-api)); the
+site itself still has no backend, authentication, database, API route or admin tool. The other
+platform pages run on local sample data, and their actions (requesting mentorship, applying to
+join) happen in the browser tab only. See **Platform prototype** below.
 
 ## Run
 
@@ -23,7 +24,12 @@ npm run build      # production build (includes type checking)
 npm start          # serve the production build
 npm run lint
 npm run typecheck
+npm test           # unit and component tests (Vitest)
+npm run test:e2e   # end-to-end tests (Playwright) against the production build: run `npm run build` first
 ```
+
+With no Core settings, `npm run dev` shows synthetic development fixtures for events (labelled as
+such). Copy `.env.example` to `.env.local` to point it at a Core instead.
 
 **Testing on a phone:** run `npm run dev` and open the **Network** URL it prints (for example
 `http://192.168.8.158:3000`) on a phone on the same Wi-Fi. Next.js blocks dev-only assets for
@@ -46,21 +52,22 @@ Platform pages (`app/(platform)/`, sharing the site's navbar, footer and the dem
 | `/leadership` | The structure hall | President ↓ Vice Presidents ↓ committees drawn as a truss that erects itself on scroll; every seat vacant until confirmed |
 | `/disciplines` | The exhibition floor | A floor plan, then a 3D turntable of seven working machines beside scrolling chapters (each with its areas of practice); on phones and tablets the caption bar sits under the canvas; a network of the disciplines' shared projects |
 | `/activities` | Archive (الأرشيف) | The society's historical archive: six drawers (one per activity) above a year-by-year gallery of prints with a lightbox; search, activity, year and discipline filters. Named Archive in the navbar and footer; the homepage's own Activities section is unchanged |
-| `/events`, `/events/[slug]` | The vertical timeline | One line through the year: past events above (the oldest folded away), a gold "today" marker, then upcoming events with the nearest one marked. The line fills as you read, a small light riding its front; nodes light as it reaches them. Filters by when, type and discipline. Detail: capacity dial and every registration state, with a check-in pass |
+| `/events`, `/events/[id]` | The vertical timeline | Events from the Core API. One line through the year: past events above (the oldest folded away), a gold "today" marker, then upcoming events with the nearest one marked. The line fills as you read, a small light riding its front; nodes light as it reaches them. Search and a when-filter. Detail: date, time, place, committee, description and the registration panel, which shows Core's answer for every registration state |
 | `/projects`, `/projects/[slug]` | The laboratory | "On the bench": the project's stage, recognition and one-line purpose beside its media viewer (3D model, videos, drawings, photos), above a catalogue of drawing sheets filterable by discipline, stage, year, type and technology. Detail: everything essential on the first screen (stage, award, at a glance, media), then problem, solution, technical approach, development journey (done → now → next), validation, awards, team and collaboration |
 | `/register` | Membership | Validated form beside a member card that fills as you type; error summary, duplicate-ID demo (`12345678`), success state |
 | `/members`, `/members/[id]` | The community network | Members clustered by discipline and linked by shared projects, above a filterable roll. Profile: the journey Joined → Participated → Attended → Built → Earned → Graduated |
-| `/profile`, `/profile/events` | Your profile | The same journey with private parts; attendance log (registered, attended, absent, pending), certificate eligibility, check-in passes |
+| `/profile`, `/profile/events` | Your profile | **Coming soon** (member accounts belong to the Core Platform). Prototype behind the switch: the same journey with private parts; attendance log, certificate eligibility, check-in passes |
 | `/certificates`, `/certificates/[id]` | The document vault | Filed prototype certificates, a verification desk (try `ES-25-0077-F1QS`), shareable verification links; large preview with mock download |
 | `/network`, `/network/[id]` | Graduates who answer back | A career map (graduation year × industry) above graduate cards; mentorship request → sent → accepted. Profile: role, what they can help with, the same mentorship request (its state shared with the network page), graduates in the same field |
 
-**Coming soon.** `/projects`, `/members`, `/network`, `/certificates` and `/register` are not open
+**Coming soon.** `/projects`, `/members`, `/network`, `/certificates`, `/register` and `/profile` are not open
 yet: each shows a Coming Soon page (the module's drawing sheet still on the board, with a little
 slow motion; on `/register`, the member card turning over, Ahmed S. on the front and "Coming soon"
 on the back). The switch is `COMING_SOON` in `content/site.ts`; each page's full implementation
 is still in place below the switch, so removing a module from the list brings its page back. The
-Community menu and the phone menu tag these modules "Soon". Their detail pages (`/projects/[slug]`,
-`/members/[id]`, `/network/[id]`, `/certificates/[id]`) still render.
+Community menu and the phone menu tag these modules "Soon". `/members/[id]` and
+`/certificates/[id]` show Coming Soon too (their sample records pointed at sample events);
+`/projects/[slug]` and `/network/[id]` still render.
 
 Every filterable page keeps its filters in the URL (shareable, survives reload). Add
 `?state=loading`, `?state=empty` or `?state=error` to any listing to review that state.
@@ -75,11 +82,11 @@ Every filterable page keeps its filters in the URL (shareable, survives reload).
   with ↑/↓/Home/End and closes with Escape, a click outside or focus leaving it. Phones and
   tablets get Home, the primary pages and the Community group in the menu panel. The footer maps
   the site in three groups: Society, Explore, Community.
-- **Addresses** come from one helper, `lib/routes.ts` (`routes.event(slug)`,
+- **Addresses** come from one helper, `lib/routes.ts` (`routes.event(id)`,
   `routes.member(id)`, `routes.discipline(id)`…), so a record has the same URL everywhere.
-  Events and projects use the same slugs on the homepage and the platform.
+  Events use Core's event id; projects use the same slugs on the homepage and the platform.
 - **The homepage as gateway:** Explore Events → `/events`, Discover Projects → `/projects`,
-  More about the society → `/about`; each event title → `/events/[slug]` and its registration
+  More about the society → `/about`; each event title → `/events/[id]` and its registration
   action → the event's registration panel (`#register`); each project card → `/projects/[slug]`;
   each discipline name → its section of `/disciplines`; Explore Previous Activities → `/activities`;
   View the Full Society Structure → `/leadership`; Join the Society → `/register`; Explore Events
@@ -88,7 +95,7 @@ Every filterable page keeps its filters in the URL (shareable, survives reload).
   graduate profiles, event pages) it links to `/disciplines#<id>` (`mechanical`, `electrical`,
   `civil`, `petroleum`, `chemical`, `mechatronics`, `industrial`, the same ids the
   `?discipline=` filters use). Arriving there turns that exhibit and brings its chapter into view.
-- **Deep pages** (`/events/[slug]`, `/projects/[slug]`, `/members/[id]`, `/network/[id]`,
+- **Deep pages** (`/events/[id]`, `/projects/[slug]`, `/members/[id]`, `/network/[id]`,
   `/certificates/[id]`, `/profile/events`) open with a breadcrumb (`Projects / Autonomous
   line-following rover`) whose first step leads back. An address with no record behind it gets
   a not-found page for that section, leading back to it.
@@ -139,11 +146,11 @@ Arabic; change those too if they are also جماعات.
 | Archive (`/activities`) | One record per edition in `content/activities.ts`, with all its photographs in the lightbox; undated records are filed last under "Undated". The discipline filter appears once records carry disciplines. | `content/activities.ts` |
 | Leadership & structure | The President (سيف المرجبي) and the three Vice Presidents (عبدالرحمن القري، كوثر عبدواني، هيا الزدجالي), named and portrayed from the society's own portrait files; the English spellings are transliterations to confirm. No term, committee chairs or deputies yet: committee seats stay vacant. فريق التصوير is listed once (the brief listed it twice). | `content/structure.ts`, `public/images/leadership/` |
 | About: community photograph | Engineering Sablah, 2025 (السبلة الهندسية), beside the society's overview. | `content/media.ts` → `SOCIETY_PHOTOS` |
-| Events | **Sample listings**, labelled "Sample". Each opens its platform page, where registration is a prototype; nothing is submitted. | `content/events.ts` |
+| Events | **From the Core Platform API** (homepage, `/events`, `/events/[id]`). Without Core settings, production shows an honest "events can't be shown right now" and local development shows synthetic fixtures labelled as such. Registration goes from the browser to Core once switched on. | `lib/core-api`, [docs](docs/core-api-integration.md) |
 | Projects (homepage) | **The society's real projects**, from the teams' posters in /photos/proj: PLA/HA bone scaffolds (Grand Prize, Engineering Gathering), HydroGenix (Winner, INJAZ Oman 2026), T.A.M.R.A. (Best project, Electrical & Mechatronics) and compressor packing leakage (Best project, Mechanical & Industrial). Only what the files state is shown: discipline, year and team where given, no stage. Each poster (or HydroGenix's model photograph) is laid on the drawing board as a print. No project pages yet, so the cards don't link; the platform's sample project pages keep their own records. | `content/projects.ts`, `public/images/projects/` |
 | Disciplines | The seven disciplines from Draft 1's content, not an official SQU list. | `content/disciplines.ts` |
 | Membership | "Join the Society" leads to the `/register` prototype everywhere; it stores and sends nothing, and no account is created. | `lib/routes.ts` |
-| Platform records | **All sample data**: the event catalogue, projects, 24 members (first name + initial only), 18 graduates (employers described by kind, never named), certificates and the archive details. One notice per page says so; certificates carry a PROTOTYPE banner and watermark and no university marks. | `content/platform/` |
+| Platform records | **All sample data**: the prototype event catalogue behind the gated profile, projects, 24 members (first name + initial only), 18 graduates (employers described by kind, never named), certificates and the archive details. One notice per page says so; certificates carry a PROTOTYPE banner and watermark and no university marks. | `content/platform/` |
 | The prototype's "today" | Fixed at 1 October 2026 so upcoming/past and certificate states are stable. | `lib/data/clock.ts` |
 | Yearly record (About) | **Sample figures** for activities and projects per year from 2000 to 2026, labelled as samples on the page. Replace them with the society's records and set `sample: false`. | `content/platform/record.ts` |
 | Project stage and recognition | Each project has a `stage` (idea → completed) and `achievements` (competition, result, year, optional link) that are independent of each other. The two achievements present are **sample results**, marked as such; the competitions named are the society's own sample activities. `validation` is empty for every project: no test result is invented. | `content/platform/projects.ts` |
@@ -154,9 +161,10 @@ Social URLs are validated: https, on the platform's own domain, pointing to a pr
 
 ## Platform prototype
 
-- **Data layer:** pages read only through the async functions in `lib/data/index.ts`
-  (`getEvents()`, `getProject(slug)`, `getMemberProfile(id)`, `verifyCertificate(code)`…). They
-  return the sample records today; connecting the real API means replacing those bodies.
+- **Data layer:** events come only from `lib/core-api` (`listPublicEvents`, `getPublicEvent`).
+  The other platform pages read through the async functions in `lib/data/index.ts`
+  (`getProject(slug)`, `getMemberProfile(id)`, `verifyCertificate(code)`…), which return sample
+  records for the modules that aren't open yet.
 - **Demo session:** `components/platform/DemoSession.tsx` holds what the visitor did in this tab
   (registrations, cancellations, mentorship requests, a completed membership form) in
   sessionStorage. No form data is ever stored. The sample signed-in member is Huda S. (`m-07`).
@@ -239,7 +247,9 @@ components/
   three/             SceneMount, Studio, procedural models and their rig
   pages/<route>/     each platform page's own components and styles
 content/             landing data and bilingual content; content/platform/ the sample records
-lib/data/            the platform's async data layer and its fixed clock
+lib/core-api/        the Core Platform API integration: config, HTTP client, validation,
+                     adapter, registration client, dev/test fixtures (see its README)
+lib/data/            sample data access for the gated modules, and its fixed clock
 lib/i18n/            config, dictionaries (en, ar, platform-*, pages/*), server helper, plurals
 lib/                 routes (every internal address), motion constants, formatting,
                      media-query + WebGL helpers
@@ -247,7 +257,23 @@ public/images/       the society's photographs: web copies of /photos (long edge
                      metadata stripped; portraits cut to head-and-shoulders squares).
                      /photos itself holds the full-resolution sources and is not committed
 styles/              tokens.css, globals.css
+tests/               unit/ (Vitest), e2e/ (Playwright, with a mock Core API), contract/ (staging Core)
+docs/                core-api-integration.md: ownership, contract assumptions, CORS, handoff
+integration/         the Core migration guidelines this integration follows
 ```
+
+## Core API
+
+`engsoc.org` is this site; `api.engsoc.org` (planned) is the Core Platform API; `admin.engsoc.org`
+(planned) is Core's admin. Core owns events and registrations; this site presents them.
+
+- One module, `lib/core-api`, reads `GET /v1/events` and `GET /v1/events/{id}` on the server
+  (timeout, validation, 45 s cache) and hands components a view model. The browser posts
+  registrations straight to `POST /v1/events/{id}/registrations`, with no credentials.
+- Settings are server-only environment variables (`.env.example`); there is no `NEXT_PUBLIC_`
+  Core variable. No Core URL is hard-coded and production never falls back to fixtures.
+- The contract is a **DRAFT** until Core publishes OpenAPI v1. What's assumed, the CORS origins
+  Core must allow, and the handoff checklist: [docs/core-api-integration.md](docs/core-api-integration.md).
 
 ## Design skills
 
